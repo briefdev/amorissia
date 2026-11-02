@@ -413,16 +413,9 @@ html[lang="en"] .hero__title em { font-style: italic; }
 .footer__cols h3 { font-family: var(--font-body); font-size: .85rem; color: var(--muted); font-weight: 500; margin-bottom: var(--s-3); }
 .footer__cols a { display: block; padding-block: 4px; font-size: .95rem; transition: color var(--t); }
 .footer__cols a:hover { color: var(--accent-text); }
-.newsletter { display: grid; gap: var(--s-3); max-width: 28rem; }
-.newsletter label { font-family: var(--font-display); font-size: 1.4rem; }
-.field-row { display: flex; border: 1px solid var(--line-strong); }
-.field-row input { flex: 1; min-width: 0; background: transparent; border: 0; padding: 0 var(--s-4); height: 50px; }
-.field-row input::placeholder { color: var(--muted); }
-.field-row input:focus { outline: none; }
-.field-row:focus-within { border-color: var(--gold-400); }
 .footer__bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s-3); font-size: .85rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: var(--s-5); }
 @media (min-width: 900px) {
-  .footer__top { grid-template-columns: 1fr 1.4fr 1fr; }
+  .footer__top { grid-template-columns: 1fr 2fr; }
   .footer__cols { grid-template-columns: repeat(3, 1fr); }
 }
 
@@ -738,8 +731,7 @@ html[lang="ar"] .vs__word { font-family: var(--font-display); font-style: normal
 .hero__frame { background: linear-gradient(rgba(214, 176, 106, .5), transparent 72%); opacity: .55; }
 .oos { bottom: 64px; inset-inline: 0; margin-inline: auto; width: max-content; background: rgba(13, 20, 39, .82); padding: 6px 12px; border-radius: 999px; }
 .tag { border: 1px solid rgba(214, 176, 106, .22); }
-.newsletter, .footer__top > * { min-width: 0; }
-.field-row .btn { padding-inline: var(--s-5); }
+.footer__top > * { min-width: 0; }
 /* hero frame: a thin gold arch line offset from the image, like the logo's double stroke */
 .hero__frame { background: linear-gradient(var(--gold-400), transparent 78%); opacity: .7; }
 .hero__frame::after { content: ""; position: absolute; inset: 1px; background: var(--bg); -webkit-mask: var(--arch) center / 100% 100% no-repeat; mask: var(--arch) center / 100% 100% no-repeat; }
@@ -799,3 +791,28 @@ dialog:focus, dialog:focus-visible { outline: none; }
 .mix-examples { display: grid; gap: var(--s-3); margin-top: var(--s-6); }
 .mix-examples .chip b { font-weight: 500; color: var(--accent-text); }
 .mix-examples .chip[aria-pressed="true"] b { color: inherit; }
+.toolbar .search { min-width: 0; }
+.toolbar .search input { width: 100%; }
+@media (max-width: 640px) { .toolbar .search { flex-basis: 100%; order: -1; } }
+
+/* ---------- Footer: payments, social, store details ---------- */
+.footer__trust { display: grid; gap: var(--s-6); padding-top: var(--s-6); border-top: 1px solid var(--line); }
+.trust-group { display: grid; gap: var(--s-3); align-content: start; }
+.trust-group h3 { font-family: var(--font-body); font-size: .85rem; color: var(--muted); font-weight: 500; }
+.trust-group ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--s-2); }
+/* payment marks: neutral badges until the official logo files are dropped in */
+.pay {
+  display: inline-grid; place-items: center; min-width: 64px; height: 34px; padding: 0 10px;
+  border: 1px solid var(--line-strong); border-radius: 4px; background: var(--surface);
+  font: 600 .78rem/1 var(--font-lat); letter-spacing: .02em; color: var(--text);
+}
+.pay--bnpl { background: var(--surface-2); }
+.trust-note { font-size: .82rem; color: var(--muted); }
+.social .icon-btn { border: 1px solid var(--line); border-radius: 50%; }
+.social .icon-btn:hover { border-color: var(--gold-400); }
+.legal { flex-direction: column; gap: var(--s-3) !important; }
+.legal li { display: flex; align-items: center; gap: var(--s-3); font-size: .9rem; }
+.legal .ico { color: var(--accent-text); }
+.legal span { color: var(--muted); }
+.legal b { font-weight: 500; letter-spacing: .04em; }
+@media (min-width: 900px) { .footer__trust { grid-template-columns: 1.4fr 1fr 1fr; } }

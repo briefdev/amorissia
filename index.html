@@ -44,6 +44,13 @@
 <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19C5 11 11 5 19 5c0 8-6 14-14 14z"/><path d="M5 19l7-7"/></symbol>
 <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/></symbol>
 <symbol id="i-wind" viewBox="0 0 24 24"><path d="M3 9h11a3 3 0 1 0-3-3M3 15h15a3 3 0 1 1-3 3"/></symbol>
+<symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6"/></symbol>
+<symbol id="i-tiktok" viewBox="0 0 24 24"><path d="M14 3.5v11a3.6 3.6 0 1 1-3.6-3.6"/><path d="M14 3.5c.5 2.6 2.4 4.4 5 4.6"/></symbol>
+<symbol id="i-snapchat" viewBox="0 0 24 24"><path d="M12 3.5c-3 0-5 2.2-5 5.2v2.1l-1.8.6c-.4.2-.4.7 0 .9l1.6.7c-.6 1.6-1.8 2.8-3.3 3.4.4.6 1.4.9 2.4 1 .2.6.4 1.1 1 1.1.8 0 1.6-.4 2.6-.1.9.3 1.5 1.1 2.5 1.1s1.6-.8 2.5-1.1c1-.3 1.8.1 2.6.1.6 0 .8-.5 1-1.1 1-.1 2-.4 2.4-1-1.5-.6-2.7-1.8-3.3-3.4l1.6-.7c.4-.2.4-.7 0-.9l-1.8-.6V8.7c0-3-2-5.2-5-5.2z"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M4.5 4h4L19.5 20h-4z"/><path d="M19.2 4l-6.2 7M11 13l-6.2 7"/></symbol>
+<symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M4 20l1.2-3.7A8.2 8.2 0 1 1 8 19z"/><path d="M9.2 8.6c-.4 3 2.4 5.9 5.6 5.6l.8-1.3-1.8-.9-.8.8a3.8 3.8 0 0 1-2.2-2.2l.8-.8-.9-1.8z"/></symbol>
+<symbol id="i-vat" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 15l6-6"/><circle cx="9.6" cy="9.6" r="1"/><circle cx="14.4" cy="14.4" r="1"/></symbol>
+<symbol id="i-cr" viewBox="0 0 24 24"><path d="M6.5 3h7.5l4 4v14h-11.5z"/><path d="M14 3v4h4"/><circle cx="12.2" cy="13" r="2.6"/><path d="M10.9 15.3l-.9 3.7 2.2-1 2.2 1-.9-3.7"/></symbol>
 </svg>
 <a class="skip" href="#main">تخطَّ إلى المحتوى</a>
 <header class="site-header">
@@ -255,15 +262,37 @@
         <div><h3>المساعدة</h3>
           <a href="#">الشحن والتوصيل</a><a href="#">الاستبدال والاسترجاع</a><a href="#">تواصل معنا</a></div>
       </div>
-      <form class="newsletter">
-        <label for="nl-email">أثرٌ في بريدك</label>
-        <p class="muted" style="font-size:.92rem">إصدارات جديدة وعروض المواسم، بدون إزعاج.</p>
-        <div class="field-row"><input id="nl-email" type="email" required placeholder="بريدك الإلكتروني" autocomplete="email"><button class="btn btn--gold" type="submit">اشترك</button></div>
-      </form>
+    </div>
+    <div class="footer__trust">
+      <div class="trust-group">
+        <h3>وسائل الدفع</h3>
+        <ul class="pay-list" aria-label="وسائل الدفع المتاحة">
+          <li class="pay">mada</li><li class="pay">VISA</li><li class="pay">Mastercard</li><li class="pay">Apple Pay</li><li class="pay">STC Pay</li>
+          <li class="pay pay--bnpl">tabby</li><li class="pay pay--bnpl">tamara</li>
+        </ul>
+        <p class="trust-note">قسّم مشترياتك مع تابي وتمارا بدون فوائد</p>
+      </div>
+      <div class="trust-group">
+        <h3>تابعنا</h3>
+        <ul class="social">
+          <li><a class="icon-btn" href="#" aria-label="Instagram"><svg class="ico" aria-hidden="true"><use href="#i-instagram"/></svg></a></li>
+          <li><a class="icon-btn" href="#" aria-label="TikTok"><svg class="ico" aria-hidden="true"><use href="#i-tiktok"/></svg></a></li>
+          <li><a class="icon-btn" href="#" aria-label="Snapchat"><svg class="ico" aria-hidden="true"><use href="#i-snapchat"/></svg></a></li>
+          <li><a class="icon-btn" href="#" aria-label="X"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></a></li>
+          <li><a class="icon-btn" href="#" aria-label="WhatsApp"><svg class="ico" aria-hidden="true"><use href="#i-whatsapp"/></svg></a></li>
+        </ul>
+      </div>
+      <div class="trust-group">
+        <h3>بيانات المتجر</h3>
+        <ul class="legal">
+          <li><svg class="ico" aria-hidden="true"><use href="#i-vat"/></svg><span>الرقم الضريبي</span><b class="lat" dir="ltr">300000000000003</b></li>
+          <li><svg class="ico" aria-hidden="true"><use href="#i-cr"/></svg><span>السجل التجاري</span><b class="lat" dir="ltr">1010000000</b></li>
+        </ul>
+      </div>
     </div>
     <div class="footer__bottom">
       <span>© 2026 AMORISSEA · أموريسيا</span>
-      <span><a href="#">Instagram</a> · <a href="#">TikTok</a> · <a href="#">Snapchat</a> · <a href="#">X</a> <span class="muted">(روابط مؤقتة)</span></span>
+      <span>الأرقام والروابط مؤقتة إلى حين اعتمادها</span>
     </div>
   </div>
 </footer>

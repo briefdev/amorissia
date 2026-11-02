@@ -265,7 +265,6 @@
   $$('.drawer__scrim, .menu__scrim').forEach(s => s.addEventListener('click', () => closeLayer(s.parentElement)));
   document.addEventListener('keydown', e => { if (e.key === 'Escape') $$('.drawer.is-open, .menu.is-open').forEach(closeLayer); });
   $('#qv')?.addEventListener('click', e => { if (e.target.id === 'qv' || e.target.closest('[data-close-qv]')) $('#qv').close(); });
-  $('.newsletter')?.addEventListener('submit', e => { e.preventDefault(); toast(L === 'ar' ? 'شكرًا — (نموذج مؤقت)' : 'Thank you — (placeholder form)'); e.target.reset(); });
 
   // keep the query (e.g. product id) when switching language
   $$('.lang-link').forEach(a => { a.href += location.search; });
