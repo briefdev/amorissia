@@ -1,0 +1,8 @@
+# Client source files (wireframe PDF, raw logo renders) — kept local, not in the repo.
+# The web-ready logo copies live in site/assets/img.
+*.pdf
+Codex Image *.png
+
+# Local tooling
+__pycache__/
+.DS_Store

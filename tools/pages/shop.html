@@ -1,0 +1,35 @@
+title: [[جميع العطور — أموريسيا|All fragrances — AMORISSEA]]
+desc: [[تسوّق عطور أموريسيا حسب العائلة العطرية والتركيز والنوتات والطقس والمناسبة.|Shop AMORISSEA fragrances by family, concentration, notes, weather and occasion.]]
+script: shop.js
+---
+<main id="main">
+  <div class="wrap">
+    <header class="page-head">
+      <nav class="crumbs" aria-label="[[مسار التنقل|Breadcrumb]]"><a href="index.html">[[الرئيسية|Home]]</a><span aria-hidden="true">/</span><span id="crumb-cur">[[العطور|Fragrances]]</span></nav>
+      <h1 id="shop-title">[[جميع العطور|All fragrances]]</h1>
+      <p>[[اختر أكثر من قيمة داخل الفلتر الواحد. التركيز والجنس والعائلة العطرية للفرز فقط، ولا تظهر الخيارات غير المتاحة.|Pick several values per filter. Concentration, gender and family are for filtering only; unavailable options are hidden.]]</p>
+    </header>
+    <nav class="cat-tabs" id="cat-tabs" aria-label="[[الأقسام|Sections]]"></nav>
+    <div class="shop">
+      <aside class="filters" id="filters" aria-label="[[الفلاتر|Filters]]"></aside>
+      <section aria-label="[[المنتجات|Products]]">
+        <div class="toolbar">
+          <button class="btn btn--line filters-btn" type="button" id="open-filters"><svg class="ico" aria-hidden="true"><use href="#i-filter"/></svg>[[الفلاتر|Filters]]</button>
+          <label class="search"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg><span class="sr-only">[[ابحث|Search]]</span><input id="q" type="search" placeholder="[[ابحث باسم العطر أو نوتة…|Search by name or note…]]"></label>
+          <label><span class="sr-only">[[ترتيب|Sort]]</span>
+            <select class="select" id="sort">
+              <option value="featured">[[الترتيب: المقترح|Sort: featured]]</option>
+              <option value="light">[[من الأخف للأثقل|Lightest first]]</option>
+              <option value="heavy">[[من الأثقل للأخف|Deepest first]]</option>
+              <option value="price-asc">[[السعر: الأقل أولًا|Price: low to high]]</option>
+              <option value="price-desc">[[السعر: الأعلى أولًا|Price: high to low]]</option>
+            </select>
+          </label>
+          <span class="result-count" id="count" aria-live="polite"></span>
+        </div>
+        <div class="active-filters" id="active"></div>
+        <div class="grid" id="grid"></div>
+      </section>
+    </div>
+  </div>
+</main>
