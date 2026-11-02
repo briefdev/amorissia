@@ -801,7 +801,7 @@ dialog:focus, dialog:focus-visible { outline: none; }
 .trust-group h3 { font-family: var(--font-body); font-size: .85rem; color: var(--muted); font-weight: 500; }
 .trust-group ul { list-style: none; margin: 0; padding: 0; }
 /* payment marks: one horizontal row, equal tiles */
-.pay-list { display: grid; grid-template-columns: repeat(7, minmax(0, 60px)); gap: 8px; }
+.pay-list { display: grid; grid-template-columns: repeat(5, minmax(0, 60px)); gap: 8px; }
 .pay-mark { width: 100%; height: auto; aspect-ratio: 60 / 38; border-radius: 6px; box-shadow: 0 0 0 1px var(--line); }
 .trust-note { font-size: .82rem; color: var(--muted); }
 .social { display: flex; gap: var(--s-2); }
