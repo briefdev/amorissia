@@ -6,3 +6,7 @@ Codex Image *.png
 # Local tooling
 __pycache__/
 .DS_Store
+
+# Working docs and previews — local only
+design-brief.md
+card-preview.png
