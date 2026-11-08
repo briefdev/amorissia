@@ -15,7 +15,12 @@
     usage: 'أوقات الاستخدام', season: 'الموسم', weather: 'الطقس', time: 'الوقت', occasion: 'المناسبة', place: 'المكان',
     like: 'قد يعجبك', similar: 'عطور مماثلة', pair: 'ركّب عطرًا', pairLead: 'عطور تنسجم مع هذا العطر عند وضعها معًا — الأخف فوق الأثقل.',
     layer: 'ركّبهما', notFound: 'لم نجد هذا العطر.', back: 'العودة إلى العطور', ship: 'شحن داخل الإمارات · تغليف الدار مع كل طلب',
-    sampleNote: 'العينة 2 مل لتجربة العطر قبل الحجم الكامل.'
+    sampleNote: 'العينة 2 مل لتجربة العطر قبل الحجم الكامل.',
+    sizes: 'الأحجام', sample: 'العينة', buy: 'اشترِ الآن', sku: 'الرقم التسلسلي',
+    share: 'مشاركة', whatsapp: 'مشاركة عبر واتساب', copy: 'نسخ الرابط', copied: 'نُسخ الرابط',
+    tabby: n => `قسّمها على 4 دفعات بقيمة <b>${n}</b> بدون فوائد`, tamara: n => `ادفع على 3 دفعات بقيمة <b>${n}</b> بدون رسوم`,
+    delivery: 'طرق التوصيل', deliveryList: ['توصيل داخل الإمارات خلال 1–3 أيام عمل', 'توصيل سريع في دبي خلال 24 ساعة', 'استلام من المتجر'],
+    compareWith: 'قارن مع', compareOther: 'قارن مع عطر آخر'
   } : {
     home: 'Home', shop: 'Fragrances', size: 'Sizes & samples', qty: 'Quantity', add: 'Add to bag', notify: 'Notify me',
     notifyOk: "We'll let you know (placeholder)", compare: 'Compare this scent', compose: 'Layer it with…', pyramid: 'The scent pyramid',
@@ -25,7 +30,12 @@
     usage: 'When to wear', season: 'Season', weather: 'Weather', time: 'Time', occasion: 'Occasion', place: 'Setting',
     like: 'You may also like', similar: 'Similar scents', pair: 'Layer a scent', pairLead: 'Scents that work with this one when worn together — lighter over deeper.',
     layer: 'Layer them', notFound: "We couldn't find this fragrance.", back: 'Back to fragrances', ship: 'UAE delivery · house wrapping with every order',
-    sampleNote: 'The 2ml sample lets you try the scent before the full size.'
+    sampleNote: 'The 2ml sample lets you try the scent before the full size.',
+    sizes: 'Sizes', sample: 'Sample', buy: 'Buy now', sku: 'SKU',
+    share: 'Share', whatsapp: 'Share on WhatsApp', copy: 'Copy link', copied: 'Link copied',
+    tabby: n => `Split into 4 payments of <b>${n}</b>, interest-free`, tamara: n => `Pay in 3 instalments of <b>${n}</b>, no fees`,
+    delivery: 'Delivery options', deliveryList: ['UAE delivery in 1–3 working days', 'Express in Dubai within 24 hours', 'Store pickup'],
+    compareWith: 'Compare with', compareOther: 'Compare with another scent'
   };
 
   if (!p) { root.innerHTML = `<div class="empty">${drop('drop drop--line')}<p>${T.notFound}</p><a class="btn btn--line" href="shop.html">${T.back}</a></div>`; return; }
@@ -65,82 +75,107 @@
     <text x="150" y="226" fill="#F2EADB">${T.base}</text>
   </svg>`;
 
+  // payment marks are drawn once in the footer; reuse them here
+  const mark = name => document.querySelector(`.pay-mark[aria-label="${name}"]`)?.outerHTML || `<b>${name}</b>`;
+  const off = AM.ui.discount(p);
+  const url = location.href;
+  const relGrid = list => `<div class="grid rel-grid">${list.map(x => card(x, { type: 'normal' })).join('')}</div>`;
+
   root.innerHTML = `
     <nav class="crumbs" aria-label="${ar ? 'مسار التنقل' : 'Breadcrumb'}" style="padding-top:var(--s-5);margin:0">
       <a href="index.html">${T.home}</a><span aria-hidden="true">/</span><a href="shop.html">${T.shop}</a><span aria-hidden="true">/</span>
       <a href="shop.html?family=${f.id}">${esc(tx(f))}</a><span aria-hidden="true">/</span><span aria-current="page">${esc(tx(p.name))}</span></nav>
 
     <section class="pdp">
-      <div class="pdp__media">${ph(p)}${p.badges.length ? `<div class="pcard__tags"><div class="tags"></div><div class="tags tags--end">${p.badges.map(b => `<span class="tag tag--soft">${esc(label('badges', b))}</span>`).join('')}</div></div>` : ''}</div>
+      <div class="pdp__media">${ph(p)}${p.badges.length ? `<div class="pcard__tags pcard__tags--top"><div class="tags"></div><div class="tags tags--end">${p.badges.map(b => `<span class="tag tag--soft">${esc(label('badges', b))}</span>`).join('')}</div></div>` : ''}</div>
+
       <div class="pdp__info">
         <span class="${ar ? 'eyebrow' : 'caps'}">${esc(brand)}</span>
-        <div class="pdp__title"><h1>${esc(tx(p.name))}</h1>
-          <button class="fav-btn" type="button" data-fav="${p.id}" aria-pressed="${isFav(p.id)}" aria-label="${ar ? 'المفضلة' : 'Favourite'}">${icon('heart')}</button></div>
-        <p class="pdp__conc"><span>${esc(label('conc', p.conc))}</span>${ar ? `<span class="lat">${AM.LABELS.conc[p.conc].en}</span>` : ''}
+        <h1 class="pdp__name">${esc(tx(p.name))}</h1>
+        <p class="pdp__conc"><span>${esc(label('conc', p.conc))}</span><span class="lat">${AM.LABELS.conc[p.conc].abbr}</span>
           <span>· ${esc(label('gender', p.gender))}</span><span>· <span style="color:${f.hue}">●</span> ${esc(tx(f))}</span></p>
         <p class="pdp__desc">${esc(tx(p.desc))}</p>
-        <div><p class="opt-label">${T.size}</p>
-          <div class="sizes" id="sizes">${sz.map(s => sizeRadio(p, s, s === defSize, 'pdp')).join('')}${sizeRadio(p, 'sample', false, 'pdp')}</div>
-          <p class="filter-note" style="margin-top:var(--s-2)">${T.sampleNote}</p></div>
-        <p class="pdp__price" id="price" aria-live="polite"></p>
-        <div class="buy-row">
-          <div class="qty qty--lg"><button type="button" id="qm" aria-label="-">${icon('minus')}</button><input id="qty" type="number" min="1" max="10" value="1" aria-label="${T.qty}"><button type="button" id="qp" aria-label="+">${icon('plus')}</button></div>
-          ${p.inStock ? `<button class="btn btn--gold" type="button" id="add">${T.add}</button>` : `<button class="btn btn--line" type="button" id="notify" style="flex:1">${T.notify}</button>`}
+        <div class="pdp__icons">
+          <button class="circle-btn" type="button" id="share" aria-label="${T.share}">${icon('share')}</button>
+          <button class="circle-btn" type="button" data-fav="${p.id}" aria-pressed="${isFav(p.id)}" aria-label="${ar ? 'المفضلة' : 'Favourite'}">${icon('heart')}</button>
+          <a class="circle-btn" href="https://wa.me/?text=${encodeURIComponent(tx(p.name) + ' — ' + url)}" target="_blank" rel="noopener" aria-label="${T.whatsapp}">${icon('whatsapp')}</a>
+          <button class="circle-btn" type="button" id="copy" aria-label="${T.copy}">${icon('link')}</button>
         </div>
-        <div class="pdp__links">
-          <a href="compare.html?a=${p.id}">${icon('compare')} ${T.compare}</a>
-          <a href="index.html?a=${p.id}#compose">${drop('drop drop--line')} ${T.compose}</a>
+        <p class="pdp__sku"><span>${T.sku}</span> <b class="lat" dir="ltr">${p.sku}</b></p>
+
+        <div class="pbox pbox--pay">${mark('Tabby')}<p id="tabby-txt"></p></div>
+        <div class="pbox pbox--pay">${mark('Tamara')}<p id="tamara-txt"></p></div>
+        <div class="pbox"><p class="pbox__title">${icon('truck')} ${T.delivery}</p><ul class="pbox__list">${T.deliveryList.map(x => `<li>${x}</li>`).join('')}</ul></div>
+
+        <div class="pbox"><p class="pbox__title">${T.sizes}</p><div class="sizes" id="sizes">${sz.map(s => sizeRadio(p, s, s === defSize, 'pdp')).join('')}</div></div>
+        <div class="pbox"><p class="pbox__title">${T.sample}</p><div class="sizes" id="sample">${sizeRadio(p, 'sample', false, 'pdp')}</div>
+          <p class="filter-note">${T.sampleNote}</p></div>
+
+        <div class="pbox pbox--buy">
+          <div class="pbox__row">
+            <p class="pdp__price" id="price" aria-live="polite"></p>
+            <div class="qty qty--lg"><button type="button" id="qp" aria-label="+">${icon('plus')}</button><input id="qty" type="number" min="1" max="10" value="1" aria-label="${T.qty}"><button type="button" id="qm" aria-label="-">${icon('minus')}</button></div>
+          </div>
+          ${p.inStock
+            ? `<div class="pbox__btns"><button class="btn btn--line" type="button" id="add">${T.add}</button><button class="btn btn--gold" type="button" id="buy">${T.buy}</button></div>`
+            : `<button class="btn btn--line btn--block" type="button" id="notify">${T.notify}</button>`}
         </div>
-        <p class="muted" style="font-size:.88rem;border-top:1px solid var(--line);padding-top:var(--s-4)">${T.ship}</p>
       </div>
-    </section>
 
-    <section class="notes-sec" aria-labelledby="pyr-h">
-      <div class="t-head" style="margin:0"><span class="t-num">01</span><h2 class="t-title" id="pyr-h">${T.pyramid}</h2></div>
-      <div class="pyr">
-        <div class="reveal">${pyramid}</div>
-        <div class="pyr__list">
-          ${['top', 'heart', 'base'].map((k, i) => `<div class="pyr__item"><span class="k">${i + 1}</span><h3>${T[k]}</h3><p>${T[k + 'D']}</p><p class="notes">${n[k].map(esc).join(' · ')}</p></div>`).join('')}
-        </div>
+      <div class="pdp__acc accord">
+        <details open><summary>${T.pyramid}</summary><div class="body">
+          <div class="pyr pyr--stack">${pyramid}<div class="pyr__list">
+            ${['top', 'heart', 'base'].map((k, i) => `<div class="pyr__item"><span class="k">${i + 1}</span><h3>${T[k]}</h3><p>${T[k + 'D']}</p><p class="notes">${n[k].map(esc).join(' · ')}</p></div>`).join('')}
+          </div></div></div></details>
+        <details><summary>${ar ? 'الاستخدام' : 'Use'}</summary><div class="body">
+          <dl class="usage">
+            <div><dt>${T.season}</dt><dd>${tags('season', p.season)}</dd></div>
+            <div><dt>${T.weather}</dt><dd>${tags('weather', p.weather)}</dd></div>
+            <div><dt>${T.time}</dt><dd>${tags('time', p.time)}</dd></div>
+            <div><dt>${T.occasion}</dt><dd>${tags('occasion', p.occasion)}</dd></div>
+            <div><dt>${T.place}</dt><dd>${tags('place', p.place)}</dd></div>
+          </dl></div></details>
+        <details><summary>${T.perf}</summary><div class="body"><div class="perf">${meter(T.longevity, p.longevity)}${meter(T.sillage, p.sillage)}</div></div></details>
+        <details><summary>${ar ? 'ركّب عطرك' : 'Layer your scent'}</summary><div class="body"><p class="lead" style="margin-bottom:var(--s-4)">${T.pairLead}</p>
+          <div class="examples">${pairs.map(x => `<div class="example example--pair">
+            <a href="product.html?id=${x.id}">${esc(tx(p.name))} + ${esc(tx(x.name))}</a>
+            <a class="link-drop" href="index.html?a=${p.id}&b=${x.id}#compose">${T.layer} ${drop()}</a></div>`).join('')}</div></div></details>
+        <details><summary>${T.like}</summary><div class="body">${relGrid(like)}</div></details>
+        <details><summary>${T.similar}</summary><div class="body">${relGrid(similar)}</div></details>
+        <details><summary>${ar ? 'قارن' : 'Compare'}</summary><div class="body">
+          <div class="examples">${[...similar, ...like].slice(0, 4).map(x => `<a class="example example--link" href="compare.html?a=${p.id}&b=${x.id}">
+            <span class="dot" style="background:${fam(x.family).hue}"></span><span>${T.compareWith} ${esc(tx(x.name))}</span>${icon('arrow', 'ico flip')}</a>`).join('')}</div>
+          <a class="link-drop" href="compare.html?a=${p.id}" style="margin-top:var(--s-4)">${T.compareOther} ${drop()}</a></div></details>
       </div>
-    </section>
-
-    <section class="notes-sec split">
-      <div><h2 class="box-title">${drop()} ${T.perf}</h2><div class="perf">${meter(T.longevity, p.longevity)}${meter(T.sillage, p.sillage)}</div></div>
-      <div><h2 class="box-title">${drop()} ${T.usage}</h2>
-        <dl class="usage">
-          <div><dt>${T.season}</dt><dd>${tags('season', p.season)}</dd></div>
-          <div><dt>${T.weather}</dt><dd>${tags('weather', p.weather)}</dd></div>
-          <div><dt>${T.time}</dt><dd>${tags('time', p.time)}</dd></div>
-          <div><dt>${T.occasion}</dt><dd>${tags('occasion', p.occasion)}</dd></div>
-          <div><dt>${T.place}</dt><dd>${tags('place', p.place)}</dd></div>
-        </dl></div>
-    </section>
-
-    <section class="accord" style="margin-bottom:var(--s-9)">
-      <details open><summary>${T.like}</summary><div class="body"><div class="rail">${like.map(card).join('')}</div></div></details>
-      <details><summary>${T.similar}</summary><div class="body"><div class="rail">${similar.map(card).join('')}</div></div></details>
-      <details><summary>${T.pair}</summary><div class="body"><p class="lead" style="margin-bottom:var(--s-5)">${T.pairLead}</p>
-        <div class="examples">${pairs.map(x => `<div class="example">
-          <span>${esc(tx(p.name))}</span><span class="op">+</span><a href="product.html?id=${x.id}">${esc(tx(x.name))}</a><span class="op op--eq">=</span>
-          <a class="link-drop" href="index.html?a=${p.id}&b=${x.id}#compose">${T.layer} ${drop()}</a></div>`).join('')}</div></div></details>
     </section>`;
 
-  // price follows the selected size
+  $$('.rel-grid', root).forEach(g => AM.ui.gridVars(g, { desktop: 2, mobile: 2 }));
+
+  // price + instalments follow the selected size or the sample
   const sel = () => { const v = $('input[name="pdp-size"]:checked').value; return v === 'sample' ? 'sample' : Number(v); };
   const updatePrice = () => {
     const s = sel(); const was = s !== 'sample' && p.was?.[s];
-    $('#price').innerHTML = `${was ? `<s>${money(was)}</s>` : ''}${money(priceOf(p, s))}`;
+    const price = priceOf(p, s);
+    $('#price').innerHTML = `${was && off ? `<span class="off">${AM.ui.STR.off(off)}</span>` : ''}<b>${money(price)}</b>${was ? `<s>${money(was)}</s>` : ''}`;
+    $('#tabby-txt').innerHTML = T.tabby(money(Math.ceil(price / 4)));
+    $('#tamara-txt').innerHTML = T.tamara(money(Math.ceil(price / 3)));
   };
-  $('#sizes').addEventListener('change', updatePrice); updatePrice();
+  root.addEventListener('change', e => { if (e.target.name === 'pdp-size') updatePrice(); });
+  updatePrice();
 
   const q = $('#qty');
   const clamp = v => Math.min(10, Math.max(1, v || 1));
   $('#qm').onclick = () => { q.value = clamp(+q.value - 1); };
   $('#qp').onclick = () => { q.value = clamp(+q.value + 1); };
   q.onchange = () => { q.value = clamp(+q.value); };
-  $('#add')?.addEventListener('click', () => addToCart(p.id, sel(), clamp(+q.value)));
+  $('#add')?.addEventListener('click', () => addToCart(p.id, sel(), clamp(+q.value), 'soft'));
+  $('#buy')?.addEventListener('click', () => addToCart(p.id, sel(), clamp(+q.value)));
   $('#notify')?.addEventListener('click', () => toast(T.notifyOk));
+  $('#copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(url); toast(T.copied); } catch { toast(url); } });
+  $('#share').addEventListener('click', async () => {
+    if (navigator.share) { try { await navigator.share({ title: tx(p.name), url }); } catch { /* cancelled */ } }
+    else { try { await navigator.clipboard.writeText(url); toast(T.copied); } catch { toast(url); } }
+  });
 
   // remember last viewed for compare preselect
   store.set('am_last', p.id);

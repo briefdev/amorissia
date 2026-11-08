@@ -15,7 +15,8 @@
       checkout: 'إتمام الطلب', checkoutNote: 'زر مؤقت — يُربط ببوابة الدفع عند النقل للمنصة',
       shipLeft: n => `أضف ${n} لتحصل على شحن مجاني`, shipDone: 'وصلت للشحن المجاني', remove: 'إزالة',
       size: 'الحجم', close: 'إغلاق', compareAdded: 'أُضيف للمقارنة', themeEvening: 'مسائي', themeMorning: 'صباحي',
-      off: n => `خصم ${n}٪`, cur: 'د.إ'
+      off: n => `خصم ${n}٪`, cur: 'د.إ',
+      add: 'أضف للسلة', buy: 'اشترِ الآن', use: 'الاستخدام', perf: 'الأداء', longevity: 'ثبات', sillage: 'فوحان'
     },
     en: {
       photo: 'Product photo', from: 'from', sample: 'Sample', ml: 'ml', addToCart: 'Add to bag', added: 'Added to your bag',
@@ -26,7 +27,8 @@
       checkout: 'Checkout', checkoutNote: 'Placeholder — connects to payment once moved to a platform',
       shipLeft: n => `Add ${n} for free shipping`, shipDone: 'You have free shipping', remove: 'Remove',
       size: 'Size', close: 'Close', compareAdded: 'Added to compare', themeEvening: 'Evening', themeMorning: 'Morning',
-      off: n => `${n}% off`, cur: 'AED'
+      off: n => `${n}% off`, cur: 'AED',
+      add: 'Add to bag', buy: 'Buy now', use: 'Use', perf: 'Performance', longevity: 'Longevity', sillage: 'Sillage'
     }
   }[L];
 
@@ -61,9 +63,10 @@
   const drop = (cls = 'drop') => `<svg class="${cls}" viewBox="0 0 24 32" aria-hidden="true"><use href="#i-drop"/></svg>`;
 
   /* ---------- placeholder image ---------- */
-  const ph = (p, arch = true) => {
+  const ph = (p, shape = 'arch') => {
     const f = fam(p.family);
-    return `<div class="ph${arch ? ' ph--arch' : ''}" style="--fam:${f.hue}" role="img" aria-label="${esc(STR.photo)}: ${esc(tx(p.name))}">
+    const cls = shape === 'arch' || shape === true ? ' ph--arch' : shape === 'dome' ? ' ph--dome' : '';
+    return `<div class="ph${cls}" style="--fam:${f.hue}" role="img" aria-label="${esc(STR.photo)}: ${esc(tx(p.name))}">
       <span class="ph-label"><b>${esc(tx(f))}</b>${STR.photo}</span></div>`;
   };
 
@@ -79,33 +82,70 @@
     document.dispatchEvent(new CustomEvent('am:fav'));
   }
 
-  /* ---------- product card ---------- */
-  function card(p) {
-    const f = fam(p.family);
+  /* ---------- display settings (merchant-adjustable; preview overrides in localStorage) ---------- */
+  const display = () => {
+    const saved = store.get('am_display', {});
+    const d = AM.DISPLAY;
+    return {
+      desktop: { ...d.desktop, ...saved.desktop }, mobile: { ...d.mobile, ...saved.mobile },
+      card: saved.card || d.card, fields: { ...d.fields, ...saved.fields }
+    };
+  };
+  // grid columns follow the settings; pass cols to override (e.g. narrow columns)
+  const gridVars = (el, cols) => {
+    const d = display();
+    el.style.setProperty('--cols-d', cols?.desktop || d.desktop.cols);
+    el.style.setProperty('--cols-m', cols?.mobile || d.mobile.cols);
+    el.classList.add('grid--set');
+  };
+
+  /* ---------- product card: 'normal' (tall arch) or 'wide' (dome, info table) ---------- */
+  function card(p, opts = {}) {
+    const d = display();
+    const type = opts.type || d.card;
+    const F = d.fields;
     const off = discount(p);
-    const start = []; // the discount badge lives next to the price
-    start.push(`<span class="tag">${esc(notesOf(p).heart[0])}</span>`);
-    start.push(`<span class="tag">${esc(label('time', p.time.length > 1 ? 'all' : p.time[0]))}</span>`);
-    const end = p.badges.slice(0, 3).map(b => `<span class="tag tag--soft">${esc(label('badges', b))}</span>`);
     const sz = sizesOf(p);
-    return `<article class="pcard fade" data-id="${p.id}">
+    const name = esc(tx(p.name));
+    const brand = F.brand ? `<span class="pcard__brand">${esc(tx(AM.BRANDS.find(b => b.id === p.brand)))}</span>` : '';
+    const conc = F.conc ? `<p class="pcard__conc">${esc(label('conc', p.conc))}</p>` : '';
+    const was = off ? `<s>${money(p.was[sz[0]] || p.was[sz.at(-1)])}</s>` : '';
+    const offTag = off ? `<span class="off">${STR.off(off)}</span>` : '';
+    const now = `<b>${money(minPrice(p))}</b>`;
+    const icons = `<div class="pcard__icons">
+        <button class="circle-btn" type="button" data-fav="${p.id}" aria-pressed="${isFav(p.id)}" aria-label="${STR.fav}: ${name}">${icon('heart')}</button>
+        <button class="circle-btn" type="button" data-qv="${p.id}" aria-label="${STR.quick}: ${name}">${icon('eye')}</button></div>`;
+    const btns = F.buttons ? `<div class="pcard__btns">
+        <button class="btn btn--line" type="button" data-add="${p.id}" data-soft="1" ${p.inStock ? '' : 'disabled'}>${STR.add}</button>
+        <button class="btn btn--gold" type="button" data-buy="${p.id}" ${p.inStock ? '' : 'disabled'}>${STR.buy}</button></div>` : '';
+    const oos = p.inStock ? '' : `<span class="oos">${STR.outOfStock}</span>`;
+
+    if (type === 'wide') {
+      const use = [...p.season.slice(0, 2).map(v => label('season', v)), label('time', p.time.length > 1 ? 'all' : p.time[0])].join(' · ');
+      const perf = `${STR.longevity} ${label('level', p.longevity)} · ${STR.sillage} ${label('level', p.sillage)}`;
+      return `<article class="pcard pcard--wide fade" data-id="${p.id}">
+        <div class="pcard__media">${ph(p, 'dome')}${oos}${icons}</div>
+        <div class="pcard__table">
+          <div class="cell">${brand}<h3 class="pcard__name"><a href="product.html?id=${p.id}">${name}</a></h3>${conc}</div>
+          <div class="cell cell--info">${F.usage ? `<p><span>${STR.use}</span>${esc(use)}</p>` : ''}${F.performance ? `<p><span>${STR.perf}</span>${esc(perf)}</p>` : ''}</div>
+          ${F.price ? (off ? `<div class="cell cell--off">${offTag}</div><div class="cell pcard__price">${now}${was}</div>` : `<div class="cell cell--full pcard__price">${now}</div>`) : ''}
+        </div>
+        ${btns}
+      </article>`;
+    }
+
+    const start = [esc(notesOf(p).heart[0]), esc(label('season', p.season[0])), esc(label('time', p.time.length > 1 ? 'all' : p.time[0]))]
+      .map(t => `<span class="tag">${t}</span>`);
+    const end = p.badges.slice(0, 3).map(b => `<span class="tag tag--soft">${esc(label('badges', b))}</span>`);
+    return `<article class="pcard pcard--normal fade" data-id="${p.id}">
       <div class="pcard__media">
-        ${ph(p)}
-        ${p.inStock ? '' : `<span class="oos">${STR.outOfStock}</span>`}
-        <div class="pcard__tags"><div class="tags">${start.join('')}</div><div class="tags tags--end">${end.join('')}</div></div>
-        <div class="pcard__actions">
-          <button class="pill-btn" type="button" data-fav="${p.id}" aria-pressed="${isFav(p.id)}" aria-label="${STR.fav}: ${esc(tx(p.name))}">${icon('heart')}<span>${STR.fav}</span></button>
-          <button class="pill-btn" type="button" data-qv="${p.id}" aria-label="${STR.quick}: ${esc(tx(p.name))}">${icon('eye')}<span>${STR.quick}</span></button>
-          <span class="pcard__mark"><img src="${ASSETS}assets/img/logo-mark.webp" alt="" width="20" height="16" loading="lazy"></span>
-        </div>
+        ${ph(p)}${oos}
+        ${F.tags ? `<div class="pcard__tags"><div class="tags">${start.join('')}</div><div class="tags tags--end">${end.join('')}</div></div>` : ''}
       </div>
-      <div class="pcard__strip">
-        <span class="pcard__brand">${esc(tx(AM.BRANDS.find(b => b.id === p.brand)))} · <span style="color:${f.hue}">●</span> ${esc(tx(f))}</span>
-        <h3 class="pcard__name"><a href="product.html?id=${p.id}">${esc(tx(p.name))}</a></h3>
-        <div class="pcard__meta">
-          <span class="pcard__conc">${esc(label('conc', p.conc))} · <span style="white-space:nowrap"><span dir="ltr">${sz[0]}–${sz.at(-1)}</span> ${STR.ml}</span></span>
-          <span class="pcard__price">${off ? `<s>${money(p.was[sz[0]] || p.was[sz.at(-1)])}</s>` : ''}<span class="now"><b>${money(minPrice(p))}</b>${off ? `<span class="off">${STR.off(off)}</span>` : ''}</span></span>
-        </div>
+      <div class="pcard__body">
+        <div class="pcard__head"><div class="pcard__title">${brand}<h3 class="pcard__name"><a href="product.html?id=${p.id}">${name}</a></h3>${conc}</div>${icons}</div>
+        ${F.price ? `<div class="pcard__price">${offTag}${now}${was}</div>` : ''}
+        ${btns}
       </div>
     </article>`;
   }
@@ -122,7 +162,8 @@
     const line = cart.find(l => l.id === id && String(l.size) === String(size));
     line ? (line.qty += qty) : cart.push({ id, size, qty });
     saveCart();
-    if (!silent) { toast(STR.added); openDrawer(); }
+    if (silent === 'soft') toast(STR.added);
+    else if (!silent) { toast(STR.added); openDrawer(); }
   }
   function renderCart() {
     const body = $('#cart-body'); if (!body) return;
@@ -250,7 +291,8 @@
     }
     if (t.dataset.fav) { e.preventDefault(); toggleFav(t.dataset.fav); }
     else if (t.dataset.qv) { e.preventDefault(); openQV(t.dataset.qv); }
-    else if (t.dataset.add) { addToCart(t.dataset.add, t.dataset.size ? (t.dataset.size === 'sample' ? 'sample' : Number(t.dataset.size)) : undefined); }
+    else if (t.dataset.add) { addToCart(t.dataset.add, t.dataset.size ? (t.dataset.size === 'sample' ? 'sample' : Number(t.dataset.size)) : undefined, 1, t.dataset.soft ? 'soft' : false); }
+    else if (t.dataset.buy) { addToCart(t.dataset.buy, undefined, 1, true); openDrawer(); }
     else if (t.matches('[data-open="cart"]')) { e.preventDefault(); openDrawer(); }
     else if (t.matches('[data-open="menu"]')) { openLayer($('#menu')); }
     else if (t.matches('[data-close]')) { closeLayer(t.closest('.drawer, .menu')); }
@@ -272,5 +314,5 @@
   syncCounts(); syncTheme(); renderCart(); initTrail(); observe();
 
   /* public API for page scripts */
-  AM.ui = { L, STR, tx, money, esc, $, $$, store, byId, fam, sizesOf, minPrice, priceOf, discount, notesOf, label, icon, drop, ph, card, isFav, toggleFav, addToCart, openQV, sizeRadio, toast, observe, cartCount };
+  AM.ui = { display, gridVars, L, STR, tx, money, esc, $, $$, store, byId, fam, sizesOf, minPrice, priceOf, discount, notesOf, label, icon, drop, ph, card, isFav, toggleFav, addToCart, openQV, sizeRadio, toast, observe, cartCount };
 })();

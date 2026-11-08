@@ -29,14 +29,14 @@ AM.FACETS = [
 
 AM.LABELS = {
   conc: {
-    extrait: { ar: 'إكستريت دو بارفان', en: 'Extrait de Parfum' },
-    parfum:  { ar: 'بارفان', en: 'Parfum' },
-    edp:     { ar: 'أو دو بارفان', en: 'Eau de Parfum' },
-    edt:     { ar: 'أو دو تواليت', en: 'Eau de Toilette' },
-    edc:     { ar: 'أو دو كولون', en: 'Eau de Cologne' },
-    fraiche: { ar: 'أو فريش', en: 'Eau Fraîche' }
+    extrait: { ar: 'إكستريت دو بارفان', en: 'Extrait de Parfum', abbr: 'Extrait' },
+    parfum:  { ar: 'بارفان', en: 'Parfum', abbr: 'Parfum' },
+    edp:     { ar: 'أو دو بارفان', en: 'Eau de Parfum', abbr: 'EDP' },
+    edt:     { ar: 'أو دو تواليت', en: 'Eau de Toilette', abbr: 'EDT' },
+    edc:     { ar: 'أو دو كولون', en: 'Eau de Cologne', abbr: 'EDC' },
+    fraiche: { ar: 'أو فريش', en: 'Eau Fraîche', abbr: 'Fraîche' }
   },
-  gender: { men: { ar: 'رجالي', en: 'Men' }, women: { ar: 'نسائي', en: 'Women' }, unisex: { ar: 'للجنسين', en: 'Unisex' } },
+  gender: { men: { ar: 'ذكر', en: 'Male' }, women: { ar: 'أنثى', en: 'Female' }, unisex: { ar: 'للجنسين', en: 'Unisex' } },
   cat: {
     all:         { ar: 'جميع العطور', en: 'All fragrances' },
     new:         { ar: 'وصل حديثًا', en: 'New in' },
@@ -57,11 +57,12 @@ AM.LABELS = {
     gift:    { ar: 'مجموعة هدايا', en: 'Gift set' },
     limited: { ar: 'إصدار محدود', en: 'Limited edition' }
   },
-  season:  { summer: { ar: 'صيفي', en: 'Summer' }, winter: { ar: 'شتوي', en: 'Winter' }, spring: { ar: 'ربيعي', en: 'Spring' }, autumn: { ar: 'خريفي', en: 'Autumn' }, all: { ar: 'طوال العام', en: 'All year' } },
+  season:  { summer: { ar: 'صيفي', en: 'Summer' }, winter: { ar: 'شتوي', en: 'Winter' }, spring: { ar: 'ربيعي', en: 'Spring' }, autumn: { ar: 'خريفي', en: 'Autumn' }, all: { ar: 'كل الفصول', en: 'All seasons' } },
   weather: { hot: { ar: 'حار', en: 'Hot' }, moderate: { ar: 'معتدل', en: 'Mild' }, cold: { ar: 'بارد', en: 'Cold' } },
   time:    { morning: { ar: 'صباحي', en: 'Day' }, evening: { ar: 'مسائي', en: 'Evening' }, all: { ar: 'جميع الأوقات', en: 'Any time' } },
   occasion:{ daily: { ar: 'يومي', en: 'Daily' }, work: { ar: 'العمل', en: 'Work' }, events: { ar: 'المناسبات والأعياد', en: 'Occasions' }, sea: { ar: 'البحر', en: 'Beach' }, sport: { ar: 'النادي والرياضة', en: 'Gym & sport' } },
   place:   { indoor: { ar: 'أماكن مغلقة ومكيّفة', en: 'Indoors, air-conditioned' }, outdoor: { ar: 'أماكن مفتوحة في أجواء حارة', en: 'Outdoors, hot weather' } },
+  use:     { daily: { ar: 'يومي', en: 'Daily' }, evening: { ar: 'مسائي', en: 'Evening' }, events: { ar: 'مناسبات', en: 'Occasions' } },
   level:   { 1: { ar: 'عادي', en: 'Soft' }, 2: { ar: 'متوسط', en: 'Moderate' }, 3: { ar: 'قوي', en: 'Strong' } }
 };
 
@@ -84,7 +85,7 @@ AM.PRODUCTS = [
     longevity: 2, sillage: 1,
     season: ['summer', 'spring'], weather: ['hot', 'moderate'], time: ['morning'], occasion: ['daily', 'work'], place: ['indoor', 'outdoor'],
     sizes: { 30: 165, 50: 240, 100: 360 }, sample: 20,
-    cats: ['new'], offers: ['summer'], badges: ['travel'], inStock: true
+    cats: ['new', 'best'], offers: ['summer'], badges: ['travel'], inStock: true
   },
   {
     id: 'noon-citrus', brand: 'signature',
@@ -96,7 +97,7 @@ AM.PRODUCTS = [
     longevity: 1, sillage: 2,
     season: ['summer'], weather: ['hot'], time: ['morning'], occasion: ['daily', 'sport'], place: ['outdoor'],
     sizes: { 50: 180, 100: 260 }, was: { 50: 225, 100: 325 }, sample: 15,
-    cats: ['sale', 'best'], offers: ['summer'], badges: [], inStock: true
+    cats: ['sale', 'best', 'new'], offers: ['summer'], badges: [], inStock: true
   },
   {
     id: 'desert-lavender', brand: 'signature',
@@ -120,7 +121,7 @@ AM.PRODUCTS = [
     longevity: 2, sillage: 2,
     season: ['summer'], weather: ['hot'], time: ['morning'], occasion: ['sea', 'sport', 'daily'], place: ['outdoor'],
     sizes: { 50: 230, 100: 340 }, sample: 18,
-    cats: ['best'], offers: ['summer', 'national'], badges: ['travel'], inStock: true
+    cats: ['best', 'new'], offers: ['summer', 'national'], badges: ['travel'], inStock: true
   },
   {
     id: 'golden-apple', brand: 'signature',
@@ -144,7 +145,7 @@ AM.PRODUCTS = [
     longevity: 3, sillage: 2,
     season: ['spring', 'autumn', 'winter'], weather: ['moderate', 'cold'], time: ['evening'], occasion: ['events'], place: ['indoor'],
     sizes: { 50: 390, 100: 560 }, sample: 30,
-    cats: ['best'], offers: ['eid', 'ramadan', 'annual'], badges: ['gift'], inStock: true
+    cats: ['best', 'new'], offers: ['eid', 'ramadan', 'annual'], badges: ['gift'], inStock: true
   },
   {
     id: 'night-jasmine', brand: 'prive',
@@ -204,7 +205,7 @@ AM.PRODUCTS = [
     longevity: 3, sillage: 3,
     season: ['winter', 'autumn'], weather: ['cold'], time: ['evening'], occasion: ['events'], place: ['indoor'],
     sizes: { 50: 780, 100: 950 }, sample: 45,
-    cats: ['new'], offers: ['national', 'annual'], badges: ['limited', 'gift'], inStock: true
+    cats: ['new', 'best'], offers: ['national', 'annual'], badges: ['limited', 'gift'], inStock: true
   },
   {
     id: 'morning-musk', brand: 'signature',
@@ -216,7 +217,7 @@ AM.PRODUCTS = [
     longevity: 2, sillage: 1,
     season: ['all'], weather: ['hot', 'moderate', 'cold'], time: ['morning', 'evening'], occasion: ['daily', 'work'], place: ['indoor', 'outdoor'],
     sizes: { 30: 140, 50: 200, 100: 300 }, sample: 15,
-    cats: ['best'], offers: ['annual'], badges: ['travel'], inStock: true
+    cats: ['best', 'new'], offers: ['annual'], badges: ['travel'], inStock: true
   }
 ];
 
@@ -256,3 +257,15 @@ AM.PAIRINGS = [
   { a: 'fig-leaf', b: 'morning-musk', ar: 'خضرة ناعمة بأثر مسكي نظيف', en: 'Soft greens with a clean musky trail' },
   { a: 'noon-citrus', b: 'sandal-smoke', ar: 'حمضيات مشرقة فوق خشب دافئ', en: 'Bright citrus over warm woods' }
 ];
+
+/* SKU shown on the product page (replace with real SKUs) */
+AM.PRODUCTS.forEach((p, i) => { p.sku = p.sku || `AMR-${1001 + i}`; });
+
+/* Product display settings — the merchant-adjustable part (a theme setting in Salla).
+   cols/count per device, card type, and which parts the card shows. */
+AM.DISPLAY = {
+  desktop: { cols: 4, count: 8 },
+  mobile:  { cols: 2, count: 6 },
+  card: 'normal',            // 'normal' | 'wide'
+  fields: { brand: false, name: true, conc: true, tags: true, usage: true, performance: true, price: true, buttons: true }
+};

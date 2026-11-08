@@ -11,7 +11,7 @@
   const uniq = a => [...new Set(a)];
 
   /* ---------- filter model ---------- */
-  const KEYS = ['cat', 'offer', 'badge', 'brand', 'gender', 'conc', 'family', 'note', 'season', 'weather', 'time', 'occasion', 'place', 'stock', 'size'];
+  const KEYS = ['cat', 'offer', 'badge', 'brand', 'gender', 'conc', 'family', 'note', 'season', 'weather', 'time', 'occasion', 'place', 'use', 'stock', 'size'];
   const state = Object.fromEntries(KEYS.map(k => [k, new Set()]));
   state.min = ''; state.max = ''; state.q = ''; state.fav = false; state.sort = 'featured';
 
@@ -21,7 +21,8 @@
     conc: p => [p.conc], family: p => [p.family, ...p.facets], note: allNotes,
     season: p => p.season.includes('all') ? Object.keys(LB.season) : p.season,
     weather: p => p.weather, time: p => p.time.length > 1 ? ['morning', 'evening', 'all'] : p.time,
-    occasion: p => p.occasion, place: p => p.place, stock: p => [p.inStock ? 'in' : 'out'], size: p => sizesOf(p)
+    occasion: p => p.occasion, place: p => p.place,
+    use: p => [p.occasion.includes('daily') && 'daily', p.time.includes('evening') && 'evening', p.occasion.includes('events') && 'events'].filter(Boolean), stock: p => [p.inStock ? 'in' : 'out'], size: p => sizesOf(p)
   };
   function match(p, skip) {
     for (const k of KEYS) if (k !== skip && !has(tests[k](p), state[k])) return false;
@@ -40,11 +41,11 @@
   const T = {
     filters: ar ? 'الفلاتر' : 'Filters', clear: ar ? 'مسح الكل' : 'Clear all', close: ar ? 'إغلاق' : 'Close',
     g: ar
-      ? ['الأقسام', 'العروض والوسوم', 'الماركات', 'الجنس', 'التركيز', 'العائلة العطرية', 'النوتات', 'الاستخدام', 'الوفرة', 'الحجم', 'السعر']
-      : ['Sections', 'Offers & tags', 'Brands', 'Gender', 'Concentration', 'Fragrance family', 'Notes', 'Use', 'Availability', 'Size', 'Price'],
+      ? ['الأقسام', 'الماركات', 'التركيز', 'الجنس', 'العائلة العطرية', 'النوتات', 'الاستخدام', 'الوفرة', 'الحجم', 'السعر']
+      : ['Sections', 'Brands', 'Concentration', 'Gender', 'Fragrance family', 'Notes', 'Use', 'Availability', 'Size', 'Price'],
     offers: ar ? 'العروض' : 'Offers', tags: ar ? 'الوسوم' : 'Tags',
     top: ar ? 'الافتتاحية' : 'Top', heart: ar ? 'القلب' : 'Heart', base: ar ? 'القاعدة' : 'Base',
-    season: ar ? 'الموسم' : 'Season', weather: ar ? 'الطقس' : 'Weather', time: ar ? 'وقت الاستخدام' : 'Time of day',
+    season: ar ? 'الموسم' : 'Season', useT: ar ? 'الوقت والمناسبة' : 'Time & occasion', weather: ar ? 'الطقس' : 'Weather', time: ar ? 'وقت الاستخدام' : 'Time of day',
     occasion: ar ? 'المناسبة أو النشاط' : 'Occasion', place: ar ? 'مكان الاستخدام' : 'Setting',
     inStock: ar ? 'متوفر' : 'In stock', outStock: ar ? 'غير متوفر' : 'Out of stock',
     brandSearch: ar ? 'ابحث عن ماركة' : 'Search brands', brandNote: ar ? 'تظهر الماركات المرتبطة بمنتجات المتجر فقط.' : 'Only brands carried by the store are shown.',
@@ -66,14 +67,13 @@
       const notes = uniq(P.flatMap(p => notesOf(p)[layer]));
       return `<p class="fgroup__sub">${T[layer]}</p>${chipsFor('note', notes, v => v)}`;
     }).join('');
-    const usage = ['season', 'weather', 'time', 'occasion', 'place'].map(k => {
-      const vals = Object.keys(LB[k]).filter(v => present(k).includes(v));
-      return `<p class="fgroup__sub">${T[k]}</p>${chipsFor(k, vals, v => label(k, v))}`;
-    }).join('');
+    // use: seasons (all / summer / winter / spring) + daily / evening / occasions
+    const seasons = ['all', 'summer', 'winter', 'spring'].filter(v => present('season').includes(v));
+    const usage = `<p class="fgroup__sub">${T.season}</p>${chipsFor('season', seasons, v => label('season', v))}
+      <p class="fgroup__sub">${T.useT}</p>${chipsFor('use', ['daily', 'evening', 'events'].filter(v => present('use').includes(v)), v => label('use', v))}`;
     const famVals = [...AM.FAMILIES, ...AM.FACETS].filter(f => present('family').includes(f.id));
-    const concs = Object.keys(LB.conc);
     const concPresent = present('conc');
-    const sizes = present('size').map(Number).sort((a, b) => a - b);
+    const sizes = [30, 50, 100].filter(v => present('size').includes(String(v)));
     const prices = P.flatMap(p => Object.values(p.sizes));
 
     $('#filters').innerHTML = `
@@ -81,20 +81,18 @@
         <span><button class="remove" type="button" id="clear-all">${T.clear}</button>
         <button class="icon-btn close-filters" type="button" id="close-filters" aria-label="${T.close}">${icon('close')}</button></span></div>
       ${group(0, T.g[0], chipsFor('cat', Object.keys(LB.cat).filter(c => c !== 'all' && present('cat').includes(c)), v => label('cat', v)), true)}
-      ${group(1, T.g[1], `<p class="fgroup__sub">${T.offers}</p>${chipsFor('offer', Object.keys(LB.offers).filter(v => present('offer').includes(v)), v => label('offers', v))}
-        <p class="fgroup__sub">${T.tags}</p>${chipsFor('badge', Object.keys(LB.badges).filter(v => present('badge').includes(v)), v => label('badges', v))}`)}
-      ${group(2, T.g[2], `<input class="brand-search" id="brand-q" type="search" placeholder="${T.brandSearch}" aria-label="${T.brandSearch}">
+      ${group(1, T.g[1], `<input class="brand-search" id="brand-q" type="search" placeholder="${T.brandSearch}" aria-label="${T.brandSearch}">
         <div class="chips" id="brand-chips">${AM.BRANDS.filter(b => present('brand').includes(b.id)).map(b => chip('brand', b.id, esc(tx(b)), ` data-name="${esc(b.ar + ' ' + b.en)}"`)).join('')}</div>
         <p class="filter-note">${T.brandNote}</p>`)}
-      ${group(3, T.g[3], chipsFor('gender', Object.keys(LB.gender).filter(v => present('gender').includes(v)), v => label('gender', v)))}
-      ${group(4, T.g[4], `<div class="conc-list">${concs.filter(c => concPresent.includes(c)).map(c =>
-        `<label><input type="checkbox" data-k="conc" data-v="${c}"><span>${esc(label('conc', c))}</span>${ar ? `<span>${LB.conc[c].en}</span>` : ''}</label>`).join('')}</div>`)}
-      ${group(5, T.g[5], `<div class="chips">${famVals.map(f => chip('family', f.id, `${f.hue ? `<span class="dot" style="--fam:${f.hue}"></span>` : ''}${esc(tx(f))}`)).join('')}</div>`, true)}
-      ${group(6, T.g[6], noteGroups)}
-      ${group(7, T.g[7], usage)}
-      ${group(8, T.g[8], `<div class="chips">${chip('stock', 'in', T.inStock)}${chip('stock', 'out', T.outStock)}</div>`)}
-      ${group(9, T.g[9], `${chipsFor('size', sizes, v => `${v} ${T.ml}`)}<p class="filter-note">${T.sizeNote}</p>`)}
-      ${group(10, T.g[10], `<div class="price-fields">
+      ${group(2, T.g[2], `<div class="conc-list">${Object.keys(LB.conc).filter(c => concPresent.includes(c)).map(c =>
+        `<label><input type="checkbox" data-k="conc" data-v="${c}"><span>${esc(label('conc', c))}</span><span>${LB.conc[c].abbr}</span></label>`).join('')}</div>`)}
+      ${group(3, T.g[3], chipsFor('gender', ['men', 'women', 'unisex'].filter(v => present('gender').includes(v)), v => label('gender', v)))}
+      ${group(4, T.g[4], `<div class="chips">${famVals.map(f => chip('family', f.id, `${f.hue ? `<span class="dot" style="--fam:${f.hue}"></span>` : ''}${esc(tx(f))}`)).join('')}</div>`)}
+      ${group(5, T.g[5], noteGroups)}
+      ${group(6, T.g[6], usage)}
+      ${group(7, T.g[7], `<div class="chips">${chip('stock', 'in', T.inStock)}${chip('stock', 'out', T.outStock)}</div>`)}
+      ${group(8, T.g[8], chipsFor('size', sizes, v => `${v} ${T.ml}`))}
+      ${group(9, T.g[9], `<div class="price-fields">
           <label class="sr-only" for="pmin">${T.from}</label><span>${T.from}</span><input id="pmin" type="number" inputmode="numeric" min="0" placeholder="${Math.min(...prices)}">
           <label class="sr-only" for="pmax">${T.to}</label><span>${T.to}</span><input id="pmax" type="number" inputmode="numeric" min="0" placeholder="${Math.max(...prices)}"><span>${T.aed}</span></div>`)}`;
 
@@ -113,7 +111,8 @@
   };
   function render() {
     const list = P.filter(p => match(p)).sort(sorters[state.sort]);
-    $('#grid').innerHTML = list.length ? list.map(card).join('')
+    AM.ui.gridVars($('#grid'));
+    $('#grid').innerHTML = list.length ? list.map(p => card(p)).join('')
       : `<div class="empty" style="grid-column:1/-1">${AM.ui.drop('drop drop--line')}<p>${T.none}</p><button class="btn btn--line" type="button" data-clear>${T.clear}</button></div>`;
     $('#count').textContent = T.count(list.length);
     observe($('#grid'));
@@ -139,7 +138,7 @@
     syncURL();
   }
   function valueLabel(k, v) {
-    const map = { cat: 'cat', offer: 'offers', badge: 'badges', gender: 'gender', conc: 'conc', season: 'season', weather: 'weather', time: 'time', occasion: 'occasion', place: 'place' };
+    const map = { use: 'use', cat: 'cat', offer: 'offers', badge: 'badges', gender: 'gender', conc: 'conc', season: 'season', weather: 'weather', time: 'time', occasion: 'occasion', place: 'place' };
     if (map[k]) return label(map[k], v);
     if (k === 'brand') return tx(AM.BRANDS.find(b => b.id === v));
     if (k === 'family') return tx(AM.ui.fam(v));
@@ -206,6 +205,7 @@
     $$('#brand-chips .chip').forEach(c => { c.hidden = q && !c.dataset.name.toLowerCase().includes(q); });
   });
   document.addEventListener('am:fav', () => state.fav && render());
+  document.addEventListener('am:display', () => render());
 
   // mobile off-canvas filters
   let scrim;
