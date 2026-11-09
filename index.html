@@ -104,20 +104,16 @@
   <div class="trail">
     <span class="trail__line" aria-hidden="true"></span><span class="trail__fill" aria-hidden="true"></span>
 
-    <section class="t-sec" aria-labelledby="s1">
+    <section class="t-sec" aria-labelledby="shelf-new" id="shelf-new-sec">
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner">
         <div class="t-head reveal">
           <span class="t-num">01</span>
-          <h2 class="t-title" id="s1">على الرفّ الآن</h2>
-          <a class="link-drop t-more" href="shop.html">كل العطور <svg class="drop" viewBox="0 0 24 32" aria-hidden="true"><use href="#i-drop"/></svg></a>
+          <h2 class="t-title" id="shelf-new">وصل حديثًا</h2>
+          <a class="link-drop t-more" href="shop.html?cat=new">عرض الكل <svg class="drop" viewBox="0 0 24 32" aria-hidden="true"><use href="#i-drop"/></svg></a>
         </div>
-        <div class="chips" role="group" aria-label="الأقسام" id="rail-tabs" style="margin-bottom:var(--s-5)">
-          <button class="chip" type="button" data-tab="new" aria-pressed="true">وصل حديثًا</button>
-          <button class="chip" type="button" data-tab="best" aria-pressed="false">الأكثر مبيعًا</button>
-          <button class="chip" type="button" data-tab="sale" aria-pressed="false">التخفيضات</button>
-        </div>
-        <div class="grid" id="shelf" aria-live="polite"></div>
+        <!-- product shelf: shows the products of one category (a merchant-picked category in Salla) -->
+        <div class="grid shelf" data-shelf="cat:new" aria-live="polite"></div>
       </div>
     </section>
 
@@ -136,11 +132,24 @@
       </div>
     </section>
 
-    <section class="t-sec" aria-labelledby="s4">
+    <section class="t-sec" aria-labelledby="shelf-best" id="shelf-best-sec">
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner">
         <div class="t-head reveal">
           <span class="t-num">03</span>
+          <h2 class="t-title" id="shelf-best">الأكثر مبيعًا</h2>
+          <a class="link-drop t-more" href="shop.html?cat=best">عرض الكل <svg class="drop" viewBox="0 0 24 32" aria-hidden="true"><use href="#i-drop"/></svg></a>
+        </div>
+        <!-- product shelf: shows the products of one category (a merchant-picked category in Salla) -->
+        <div class="grid shelf" data-shelf="cat:best" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="t-sec" aria-labelledby="s4">
+      <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
+      <div class="inner">
+        <div class="t-head reveal">
+          <span class="t-num">04</span>
           <h2 class="t-title" id="s4">عطرك حسب الطقس</h2>
         </div>
         <div class="weather">
@@ -171,7 +180,7 @@
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner">
         <div class="t-head reveal">
-          <span class="t-num">04</span>
+          <span class="t-num">05</span>
           <h2 class="t-title" id="s5">ركّب عطرك</h2>
         </div>
         <p class="lead" style="margin-bottom:var(--s-6)">اختر نوتتين أو عطرين للوصول إلى تركيبة مزدوجة. القاعدة الذهبية: الأثقل أولًا على البشرة، ثم الأخف فوقه.</p>
@@ -188,11 +197,24 @@
       </div>
     </section>
 
+    <section class="t-sec" aria-labelledby="shelf-unisex" id="shelf-unisex-sec">
+      <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
+      <div class="inner">
+        <div class="t-head reveal">
+          <span class="t-num">06</span>
+          <h2 class="t-title" id="shelf-unisex">عطور للجنسين</h2>
+          <a class="link-drop t-more" href="shop.html?gender=unisex">عرض الكل <svg class="drop" viewBox="0 0 24 32" aria-hidden="true"><use href="#i-drop"/></svg></a>
+        </div>
+        <!-- product shelf: shows the products of one category (a merchant-picked category in Salla) -->
+        <div class="grid shelf" data-shelf="gender:unisex" aria-live="polite"></div>
+      </div>
+    </section>
+
     <section class="t-sec" aria-labelledby="s6" id="annual">
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner">
         <div class="t-head reveal">
-          <span class="t-num">05</span>
+          <span class="t-num">07</span>
           <h2 class="t-title" id="s6">الباقة السنوية — أربعة عطور تكفي</h2>
         </div>
         <p class="lead" style="margin-bottom:var(--s-5)">اختر الفئة السعرية، أو بدّل أي عطر من الجدول، ثم أضف الباقة كاملة للسلة.</p>
@@ -210,7 +232,7 @@
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner ask">
         <div>
-          <div class="t-head reveal" style="margin-bottom:var(--s-4)"><span class="t-num">06</span><span class="eyebrow">مستكشف العطور — ثلاثة أسئلة</span></div>
+          <div class="t-head reveal" style="margin-bottom:var(--s-4)"><span class="t-num">08</span><span class="eyebrow">مستكشف العطور — ثلاثة أسئلة</span></div>
           <h2 class="ask__q reveal" id="s2">متى تتعطّر<br>غالبًا؟</h2>
         </div>
         <div class="ask__opts">

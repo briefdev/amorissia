@@ -104,20 +104,16 @@
   <div class="trail">
     <span class="trail__line" aria-hidden="true"></span><span class="trail__fill" aria-hidden="true"></span>
 
-    <section class="t-sec" aria-labelledby="s1">
+    <section class="t-sec" aria-labelledby="shelf-new" id="shelf-new-sec">
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner">
         <div class="t-head reveal">
           <span class="t-num">01</span>
-          <h2 class="t-title" id="s1">On the shelf now</h2>
-          <a class="link-drop t-more" href="shop.html">All fragrances <svg class="drop" viewBox="0 0 24 32" aria-hidden="true"><use href="#i-drop"/></svg></a>
+          <h2 class="t-title" id="shelf-new">New in</h2>
+          <a class="link-drop t-more" href="shop.html?cat=new">View all <svg class="drop" viewBox="0 0 24 32" aria-hidden="true"><use href="#i-drop"/></svg></a>
         </div>
-        <div class="chips" role="group" aria-label="Sections" id="rail-tabs" style="margin-bottom:var(--s-5)">
-          <button class="chip" type="button" data-tab="new" aria-pressed="true">New in</button>
-          <button class="chip" type="button" data-tab="best" aria-pressed="false">Best sellers</button>
-          <button class="chip" type="button" data-tab="sale" aria-pressed="false">Sale</button>
-        </div>
-        <div class="grid" id="shelf" aria-live="polite"></div>
+        <!-- product shelf: shows the products of one category (a merchant-picked category in Salla) -->
+        <div class="grid shelf" data-shelf="cat:new" aria-live="polite"></div>
       </div>
     </section>
 
@@ -136,11 +132,24 @@
       </div>
     </section>
 
-    <section class="t-sec" aria-labelledby="s4">
+    <section class="t-sec" aria-labelledby="shelf-best" id="shelf-best-sec">
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner">
         <div class="t-head reveal">
           <span class="t-num">03</span>
+          <h2 class="t-title" id="shelf-best">Best sellers</h2>
+          <a class="link-drop t-more" href="shop.html?cat=best">View all <svg class="drop" viewBox="0 0 24 32" aria-hidden="true"><use href="#i-drop"/></svg></a>
+        </div>
+        <!-- product shelf: shows the products of one category (a merchant-picked category in Salla) -->
+        <div class="grid shelf" data-shelf="cat:best" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="t-sec" aria-labelledby="s4">
+      <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
+      <div class="inner">
+        <div class="t-head reveal">
+          <span class="t-num">04</span>
           <h2 class="t-title" id="s4">Scent by weather</h2>
         </div>
         <div class="weather">
@@ -171,7 +180,7 @@
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner">
         <div class="t-head reveal">
-          <span class="t-num">04</span>
+          <span class="t-num">05</span>
           <h2 class="t-title" id="s5">Layer your scent</h2>
         </div>
         <p class="lead" style="margin-bottom:var(--s-6)">Choose two notes or two scents to reach a layered blend. The golden rule: deeper first on skin, lighter on top.</p>
@@ -188,11 +197,24 @@
       </div>
     </section>
 
+    <section class="t-sec" aria-labelledby="shelf-unisex" id="shelf-unisex-sec">
+      <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
+      <div class="inner">
+        <div class="t-head reveal">
+          <span class="t-num">06</span>
+          <h2 class="t-title" id="shelf-unisex">Unisex scents</h2>
+          <a class="link-drop t-more" href="shop.html?gender=unisex">View all <svg class="drop" viewBox="0 0 24 32" aria-hidden="true"><use href="#i-drop"/></svg></a>
+        </div>
+        <!-- product shelf: shows the products of one category (a merchant-picked category in Salla) -->
+        <div class="grid shelf" data-shelf="gender:unisex" aria-live="polite"></div>
+      </div>
+    </section>
+
     <section class="t-sec" aria-labelledby="s6" id="annual">
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner">
         <div class="t-head reveal">
-          <span class="t-num">05</span>
+          <span class="t-num">07</span>
           <h2 class="t-title" id="s6">The annual four — all you need</h2>
         </div>
         <p class="lead" style="margin-bottom:var(--s-5)">Pick a price tier, or swap any scent in the table, then add the whole set to your bag.</p>
@@ -210,7 +232,7 @@
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner ask">
         <div>
-          <div class="t-head reveal" style="margin-bottom:var(--s-4)"><span class="t-num">06</span><span class="eyebrow">Scent explorer — three questions</span></div>
+          <div class="t-head reveal" style="margin-bottom:var(--s-4)"><span class="t-num">08</span><span class="eyebrow">Scent explorer — three questions</span></div>
           <h2 class="ask__q reveal" id="s2">When do you<br>usually wear scent?</h2>
         </div>
         <div class="ask__opts">

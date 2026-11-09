@@ -238,13 +238,13 @@ html[lang="en"] .lang-link { font-family: var(--font-ar); letter-spacing: 0; fon
 .hero .wrap { display: grid; gap: var(--s-7); align-items: end; }
 .hero__copy { position: relative; z-index: 2; }
 .hero__title {
-  font-size: clamp(3.4rem, 11vw, 8.6rem);
+  font-size: clamp(2.8rem, 8.5vw, 6.6rem);
   line-height: 1.12; font-weight: 600; letter-spacing: 0;
   margin-block: var(--s-4) var(--s-5);
 }
 .hero__title em { font-style: normal; color: var(--gold-400); display: block; }
 [data-theme="morning"] .hero__title em { color: var(--gold-ink); }
-html[lang="en"] .hero__title { font-size: clamp(3rem, 9vw, 7.2rem); font-weight: 300; line-height: 1; }
+html[lang="en"] .hero__title { font-size: clamp(2.6rem, 7vw, 5.6rem); font-weight: 300; line-height: 1; }
 html[lang="en"] .hero__title em { font-style: italic; }
 .hero__lead { max-width: 30rem; font-size: 1.15rem; color: var(--muted); }
 .hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-5) var(--s-6); margin-top: var(--s-6); }
