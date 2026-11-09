@@ -932,3 +932,19 @@ dialog.settings { width: min(94vw, 460px); }
   .pcard__tags .tag { font-size: .64rem; padding: 5px 7px; }
   .pcard--normal .tags--end .tag:nth-child(n+2) { display: none; }
 }
+
+/* ---------- Home product shelf: slider, N cards per view (column setting) ---------- */
+.shelf.grid--set {
+  --gap: var(--s-3);
+  grid-template-columns: none; grid-auto-flow: column; column-gap: var(--gap);
+  grid-auto-columns: calc((100% - (var(--cols-m) - 1) * var(--gap)) / var(--cols-m));
+  overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none;
+}
+.shelf::-webkit-scrollbar { display: none; }
+.shelf > * { scroll-snap-align: start; }
+@media (min-width: 900px) {
+  .shelf.grid--set { --gap: var(--s-5); grid-auto-columns: calc((100% - (var(--cols-d) - 1) * var(--gap)) / var(--cols-d)); }
+}
+.shelf-nav { display: flex; gap: var(--s-2); }
+.shelf-nav .circle-btn:disabled { opacity: .35; cursor: default; }
+.shelf-nav .circle-btn:disabled:hover { border-color: var(--line-strong); color: var(--text); }
