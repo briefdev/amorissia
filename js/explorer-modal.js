@@ -12,26 +12,25 @@
         { v: 'evening', ico: 'moon', t: ar ? 'مساء وطلعات' : 'Evenings out', s: ar ? 'دافئ وحاضر' : 'Warm and present' },
         { v: 'events', ico: 'star', t: ar ? 'سهرات ومناسبات' : 'Occasions', s: ar ? 'عميق ويدوم طويلًا' : 'Deep and long-lasting' }
       ] },
-    { id: 'season', h: ar ? 'لأي فصل تبحث عن عطر؟' : 'Which season is it for?', sub: ar ? 'الطقس يغيّر طريقة فوحان العطر.' : 'Weather changes how a scent projects.',
+    { id: 'weather', h: ar ? 'كيف يكون الطقس غالبًا حين تتعطّر؟' : 'What is the weather usually like when you wear it?', sub: ar ? 'درجة الحرارة تغيّر طريقة فوحان العطر.' : 'Temperature changes how a scent projects.',
       opts: [
-        { v: 'summer', ico: 'sun', t: ar ? 'الصيف' : 'Summer', s: ar ? '30° فأكثر' : '30°+' },
-        { v: 'spring', ico: 'leaf', t: ar ? 'الربيع' : 'Spring', s: '20–29°' },
-        { v: 'autumn', ico: 'wind', t: ar ? 'الخريف' : 'Autumn', s: '20–29°' },
-        { v: 'winter', ico: 'snow', t: ar ? 'الشتاء' : 'Winter', s: ar ? '19° وأقل' : '19° and below' }
+        { v: 'hot', ico: 'sun', t: ar ? 'طقس حار' : 'Hot', s: ar ? '30° فأكثر' : '30°+' },
+        { v: 'moderate', ico: 'wind', t: ar ? 'طقس معتدل' : 'Mild', s: '20–29°' },
+        { v: 'cold', ico: 'snow', t: ar ? 'طقس بارد' : 'Cold', s: ar ? '19° وأقل' : '19° and below' }
       ] },
     { id: 'family', h: ar ? 'أي طابع أقرب لذوقك؟' : 'Which character feels like you?', sub: ar ? 'الأقرب لاختياراتك مُعلَّم أولًا — والقرار لك.' : 'Closest to your answers is marked — your call.' }
   ];
   // families that fit each answer (to mark "closest to your choices")
   const FIT = {
     day: ['green', 'citrus', 'aquatic', 'fruity', 'aromatic'], evening: ['floral', 'aromatic', 'woody', 'gourmand'], events: ['oriental', 'woody', 'gourmand', 'floral'],
-    summer: ['citrus', 'aquatic', 'green'], spring: ['floral', 'fruity', 'green'], autumn: ['aromatic', 'woody', 'floral'], winter: ['gourmand', 'oriental', 'woody']
+    hot: ['citrus', 'aquatic', 'green'], moderate: ['floral', 'aromatic', 'fruity'], cold: ['gourmand', 'oriental', 'woody']
   };
 
   let ans = {}, step = 0;
   const body = $('#explorer-body');
 
   const recFamilies = () => {
-    const score = f => (FIT[ans.when] || []).includes(f.id) + (FIT[ans.season] || []).includes(f.id);
+    const score = f => (FIT[ans.when] || []).includes(f.id) + (FIT[ans.weather] || []).includes(f.id);
     const max = Math.max(...F.map(score));
     return max ? F.filter(f => score(f) === max).map(f => f.id) : [];
   };
