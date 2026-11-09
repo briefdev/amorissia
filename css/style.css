@@ -873,9 +873,6 @@ dialog:focus, dialog:focus-visible { outline: none; }
   .pcard__table .cell:first-child, .pcard__table .cell--off { border-inline-end: 0; }
 }
 
-/* ---------- Weather: label next to the season ---------- */
-.wcol__w { font-family: var(--font-body); font-size: .95rem; font-weight: 400; color: var(--muted); margin-inline-start: .35em; white-space: nowrap; }
-.wcol__w::before { content: "· "; }
 
 /* ---------- Product page v2 ---------- */
 .pdp { grid-template-areas: "media" "info" "acc"; }
