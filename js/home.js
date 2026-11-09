@@ -15,7 +15,10 @@
     $$('[data-shelf]').forEach(el => {
       const [key, val] = el.dataset.shelf.split(':');
       gridVars(el);
-      el.innerHTML = AM.PRODUCTS.filter(p => pick[key]?.(p, val)).slice(0, count).map(p => card(p)).join('');
+      // sample data is small: repeat the category's products until the shelf is full
+      const list = AM.PRODUCTS.filter(p => pick[key]?.(p, val));
+      const fill = list.length ? Array.from({ length: count }, (_, i) => list[i % list.length]) : [];
+      el.innerHTML = fill.map(p => card(p)).join('');
       observe(el);
     });
   };
