@@ -1162,3 +1162,26 @@ dialog.settings { width: min(94vw, 460px); }
 .theme-btn[aria-checked="false"] .theme-btn__moon, .theme-btn[aria-checked="true"] .theme-btn__sun { color: var(--navy-900); }
 .theme-btn:hover .theme-btn__track { border-color: var(--gold-400); }
 .theme-btn:focus-visible { outline: 2px solid var(--gold-400); outline-offset: 3px; }
+
+/* ---------- Hero: featured scent inside the arch ---------- */
+.hero__arch { position: relative; overflow: hidden; }
+.hero__arch .hero__img {
+  width: 62%; height: 78%; object-fit: contain; object-position: center bottom;
+  filter: drop-shadow(0 22px 34px rgba(0, 0, 0, .45)); transition: transform 700ms var(--ease);
+}
+.hero__arch:hover .hero__img { transform: scale(1.05); }
+.hero__tag { display: grid; gap: 2px; max-width: 15rem; padding: var(--s-3) var(--s-4); }
+.hero__tag:empty { display: none; }
+.hero__tag-brand { font-size: .74rem; color: var(--accent-text); }
+.hero__tag-name { font-family: var(--font-display); font-size: 1.15rem; line-height: 1.3; }
+.hero__tag-name:hover { color: var(--accent-text); }
+.hero__tag-meta { font-size: .78rem; color: var(--muted); }
+.hero__tag-price { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 4px; font-family: var(--font-lat); }
+.hero__tag-price b { font-size: 1.05rem; font-weight: 600; }
+.hero__tag-price s { font-size: .8rem; color: var(--muted); }
+/* the featured scent's card sits at the arch's lower corner, clear of the bottle */
+.hero__tag { bottom: 5%; inset-inline-end: -56px; box-shadow: 0 10px 28px rgba(0, 0, 0, .3); }
+@media (max-width: 899px) {
+  .hero__tag { position: relative; inset: auto; margin: -36px auto 0; width: max-content; max-width: 90%; text-align: center; justify-items: center; }
+  .hero__tag-price { justify-content: center; }
+}

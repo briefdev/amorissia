@@ -73,6 +73,7 @@ AM.LABELS = {
 AM.DISPLAY = {
   desktop: { cols: 4, count: 8 },
   mobile:  { cols: 2, count: 6 },
+  hero: '378085258',         // the featured scent in the hero (an offer or a signature)
   card: 'normal',            // 'normal' | 'wide'
   fields: { brand: false, name: true, conc: true, tags: true, usage: true, performance: true, price: true, buttons: true }
 };

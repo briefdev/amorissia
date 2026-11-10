@@ -1,6 +1,21 @@
-/* Home: product shelves (one category each, repeatable) and weather counts. */
+/* Home: featured scent in the hero, product shelves (one category each, repeatable) and weather counts. */
 (() => {
-  const { L, $$, card, observe, display, gridVars } = AM.ui;
+  const { L, $, $$, card, observe, display, gridVars, byId, tx, esc, money, minPrice, discount, label, STR } = AM.ui;
+
+  // hero: the featured scent (an offer or a signature) — set in AM.DISPLAY.hero
+  const hp = byId(AM.DISPLAY.hero) || AM.PRODUCTS.find(p => p.inStock && p.img);
+  if (hp && $('#hero-product')) {
+    const link = $('#hero-product'), img = $('.hero__img', link);
+    link.href = `product.html?id=${hp.id}`;
+    link.setAttribute('aria-label', tx(hp.name));
+    if (hp.img) { img.src = (document.documentElement.dataset.root || '') + hp.img; img.alt = tx(hp.name); }
+    const off = discount(hp), sz = Object.keys(hp.sizes).map(Number).sort((a, b) => a - b);
+    $('#hero-tag').innerHTML = `
+      <span class="hero__tag-brand">${esc(tx(AM.BRANDS.find(b => b.id === hp.brand)) || '')}</span>
+      <a class="hero__tag-name" href="product.html?id=${hp.id}">${esc(tx(hp.name))}</a>
+      <span class="hero__tag-meta">${esc(label('conc', hp.conc))}</span>
+      <span class="hero__tag-price">${off ? `<span class="off">${STR.off(off)}</span>` : ''}<b>${money(minPrice(hp))}</b>${off ? `<s>${money(hp.was[sz[0]] || Object.values(hp.was)[0])}</s>` : ''}</span>`;
+  }
 
   // shelf source "key:value" → products (in Salla: the category picked in the block settings)
   const pick = {

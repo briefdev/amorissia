@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="css/style.css?v=202611110014">
+<link rel="stylesheet" href="css/style.css?v=202611110019">
 <script>try{var t=localStorage.getItem('am_theme');if(t)document.documentElement.dataset.theme=JSON.parse(t)}catch(e){}</script>
 </head>
 <body>
@@ -92,11 +92,11 @@
       </div>
       <div class="hero__media">
         <div class="hero__frame"></div>
-        <div class="hero__arch">
-          <img class="hero__drop" src="assets/img/logo-mark.webp" alt="" width="454" height="360" fetchpriority="high">
-          <span class="ph-label">مكان صورة الحملة</span>
-        </div>
-        <p class="hero__tag"><span class="caps">Oud Athar</span><br>توقيع الدار — إكستريت دو بارفان</p>
+        <!-- featured scent / offer (AM.DISPLAY.hero; a block setting in Salla) -->
+        <a class="hero__arch" id="hero-product" href="shop.html">
+          <img class="hero__img" src="assets/products/378085258.webp" alt="" width="540" height="720" fetchpriority="high">
+        </a>
+        <div class="hero__tag" id="hero-tag"></div>
       </div>
     </div>
   </section>
@@ -356,9 +356,9 @@
   <button class="icon-btn qv__close" type="button" data-close-qv aria-label="إغلاق"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
 </dialog>
 
-<script src="js/products.js?v=202611110014" defer></script>
-<script src="js/catalog.js?v=202611110014" defer></script>
-<script src="js/main.js?v=202611110014" defer></script>
-<script src="js/home.js?v=202611110014" defer></script><script src="js/display-settings.js?v=202611110014" defer></script><script src="js/explorer-modal.js?v=202611110014" defer></script><script src="js/family-picker.js?v=202611110014" defer></script><script src="js/compose-mix.js?v=202611110014" defer></script><script src="js/annual-set.js?v=202611110014" defer></script>
+<script src="js/products.js?v=202611110019" defer></script>
+<script src="js/catalog.js?v=202611110019" defer></script>
+<script src="js/main.js?v=202611110019" defer></script>
+<script src="js/home.js?v=202611110019" defer></script><script src="js/display-settings.js?v=202611110019" defer></script><script src="js/explorer-modal.js?v=202611110019" defer></script><script src="js/family-picker.js?v=202611110019" defer></script><script src="js/compose-mix.js?v=202611110019" defer></script><script src="js/annual-set.js?v=202611110019" defer></script>
 </body>
 </html>
