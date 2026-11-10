@@ -16,8 +16,7 @@
   const side = (key, id) => {
     const p = byId(id);
     return `<div class="cmp2__item">
-      <label class="select-wrap"><span class="sr-only">${ar ? (key === 'a' ? 'العطر الأول' : 'العطر الثاني') : (key === 'a' ? 'First scent' : 'Second scent')}</span>
-        <select class="select select--lg" data-side="${key}">${P.map(x => `<option value="${x.id}"${x.id === id ? ' selected' : ''}>${esc(tx(x.name))} — ${esc(brandOf(x))}</option>`).join('')}</select></label>
+      <div class="combo" id="cmp-combo-${key}"></div>
       <a class="cmp2__img" href="product.html?id=${p.id}" aria-label="${esc(tx(p.name))}">${ph(p)}</a>
       <p class="cmp2__brand">${esc(brandOf(p))}</p>
       <h2 class="cmp2__name"><a href="product.html?id=${p.id}">${esc(tx(p.name))}</a></h2>
@@ -55,8 +54,17 @@
           <dt class="cmp2__k">${k}</dt>
           <dd class="cmp2__v cmp2__v--b${win === 'b' ? ' win' : ''}">${y}</dd>
         </div>`).join('')}</dl>`;
+    ['a', 'b'].forEach(key => {
+      const cur = key === 'a' ? a : b;
+      AM.ui.combo($(`#cmp-combo-${key}`), {
+        label: ar ? (key === 'a' ? 'العطر الأول' : 'العطر الثاني') : (key === 'a' ? 'First scent' : 'Second scent'),
+        placeholder: tx(byId(cur).name),
+        groups: () => [{ label: '', items: P.map(x => ({ value: x.id, text: tx(x.name), sub: `${brandOf(x)} · ${tx(fam(x.family))}`,
+          search: `${tx(x.name)} ${brandOf(x)} ${tx(fam(x.family))}`, hue: fam(x.family).hue, img: x.img, selected: x.id === cur })) }],
+        onPick: v => { key === 'a' ? (a = v) : (b = v); render(); }
+      });
+    });
     history.replaceState(null, '', `?a=${a}&b=${b}`);
   }
-  $('#cmp2').addEventListener('change', e => { const s = e.target.closest('select'); if (!s) return; s.dataset.side === 'a' ? (a = s.value) : (b = s.value); render(); });
   render();
 })();

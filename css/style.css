@@ -1139,3 +1139,10 @@ dialog.settings { width: min(94vw, 460px); }
   .cmp2__k { font-size: .72rem; }
   .cmp2__item .btn { font-size: .8rem; min-height: 40px; padding-inline: var(--s-2); }
 }
+.cmp2__item .combo { width: 100%; }
+.cmp2__item .combo__btn { height: 48px; font-size: .92rem; }
+.cmp2__item .combo__pop { text-align: start; }
+/* long names shrink with an ellipsis instead of widening the dropdown */
+.combo { min-width: 0; }
+.combo__val { flex: 1; min-width: 0; text-align: start; }
+@media (max-width: 640px) { .cmp2__item .combo__btn { padding-inline: var(--s-2); font-size: .82rem; gap: var(--s-1); } }

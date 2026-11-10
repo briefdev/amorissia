@@ -15,14 +15,14 @@
   AM.PRODUCTS.forEach(p => allNotes(p).forEach(t => { if (!NOTES.some(x => x.t === t)) NOTES.push({ t, family: p.family }); }));
 
   const T = ar ? {
-    scents: 'العطور', notes: 'النوتات', suggested: 'مقترح لك', all: 'كل العطور', search: 'ابحث بالاسم أو الماركة أو النوتة…',
-    pickA: 'اختر عطرًا أو نوتة', pickB: 'اختر العطر الثاني', none: 'لا نتائج', note: 'نوتة',
+    scents: 'العطور', notes: 'النوتات', suggested: 'مقترح لك', all: 'كل العطور',
+    pickA: 'اختر عطرًا أو نوتة', pickB: 'اختر العطر الثاني', note: 'نوتة',
     order: 'طريقة الوضع', addBoth: 'أضف الاثنين للسلة', suggest: 'عطور تحمل هذه النوتة', wear: 'متى تلبسها',
     light: 'خفيفة ونهارية', mid: 'متوازنة للمساء والدوام', deep: 'عميقة للمناسبات والطقس البارد',
     base: 'يوضع أولًا كقاعدة', top: 'يوضع فوقه كلمسة', same: 'يكثّف نفس الطابع', both: 'الحجمان الأصغر معًا', blend: 'التركيبة الناتجة'
   } : {
-    scents: 'Scents', notes: 'Notes', suggested: 'Suggested for you', all: 'All scents', search: 'Search by name, brand or note…',
-    pickA: 'Pick a scent or a note', pickB: 'Pick the second scent', none: 'No results', note: 'Note',
+    scents: 'Scents', notes: 'Notes', suggested: 'Suggested for you', all: 'All scents',
+    pickA: 'Pick a scent or a note', pickB: 'Pick the second scent', note: 'Note',
     order: 'How to wear it', addBoth: 'Add both to bag', suggest: 'Scents carrying this note', wear: 'When to wear it',
     light: 'light and daytime', mid: 'balanced for evenings and work', deep: 'deep, for occasions and cold weather',
     base: 'Goes on first, as the base', top: 'Goes on top, as a lift', same: 'Deepens the same character', both: 'Both smallest sizes', blend: 'Your blend'
@@ -33,56 +33,6 @@
   const familyOf = s => s.kind === 'scent' ? byId(s.v).family : NOTES.find(n => n.t === s.v).family;
   const nameOf = s => s.kind === 'scent' ? tx(byId(s.v).name) : s.v;
 
-  /* ---------- searchable dropdown ---------- */
-  function combo(el, { labelId, placeholder, groups, onPick }) {
-    const id = el.id;
-    el.innerHTML = `
-      <button class="combo__btn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="${labelId} ${id}-val">
-        <span class="combo__val" id="${id}-val">${placeholder}</span>${icon('arrow', 'ico combo__chev')}</button>
-      <div class="combo__pop" hidden>
-        <label class="combo__search">${icon('search')}<input type="search" placeholder="${T.search}" aria-label="${T.search}" autocomplete="off"></label>
-        <ul class="combo__list" role="listbox" aria-labelledby="${labelId}"></ul>
-      </div>`;
-    const btn = $('.combo__btn', el), pop = $('.combo__pop', el), input = $('input', el), list = $('.combo__list', el);
-    let items = [], active = -1;
-    const match = (it, q) => !q || (it.search || it.text).toLowerCase().includes(q);
-    function render() {
-      const q = input.value.trim().toLowerCase();
-      items = [];
-      list.innerHTML = groups().map(g => {
-        const its = g.items.filter(it => match(it, q));
-        if (!its.length) return '';
-        return `<li class="combo__group" role="presentation">${g.label}</li>` + its.map(it => {
-          items.push(it);
-          return `<li class="combo__opt" role="option" id="${id}-o${items.length - 1}" data-i="${items.length - 1}" aria-selected="${!!it.selected}" style="--fam:${it.hue}">
-            ${it.img ? `<img src="${(document.documentElement.dataset.root || '')}${it.img}" alt="" loading="lazy">` : '<span class="dot"></span>'}
-            <span><b>${esc(it.text)}</b>${it.sub ? `<small>${esc(it.sub)}</small>` : ''}</span></li>`;
-        }).join('');
-      }).join('') || `<li class="combo__empty">${T.none}</li>`;
-      setActive(items.findIndex(it => it.selected));
-    }
-    function setActive(i) {
-      active = i;
-      $$('.combo__opt', list).forEach(o => o.classList.toggle('is-active', +o.dataset.i === i));
-      const o = $(`[data-i="${i}"]`, list);
-      input.setAttribute('aria-activedescendant', o ? o.id : '');
-      o?.scrollIntoView({ block: 'nearest' });
-    }
-    const open = () => { pop.hidden = false; btn.setAttribute('aria-expanded', 'true'); input.value = ''; render(); input.focus(); };
-    const close = (focus = true) => { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); if (focus) btn.focus(); };
-    const pick = i => { const it = items[i]; if (!it) return; close(); onPick(it.value); };
-    btn.addEventListener('click', () => (pop.hidden ? open() : close()));
-    input.addEventListener('input', render);
-    input.addEventListener('keydown', e => {
-      if (e.key === 'ArrowDown') { setActive(Math.min(items.length - 1, active + 1)); e.preventDefault(); }
-      else if (e.key === 'ArrowUp') { setActive(Math.max(0, active - 1)); e.preventDefault(); }
-      else if (e.key === 'Enter') { pick(active >= 0 ? active : 0); e.preventDefault(); }
-      else if (e.key === 'Escape') close();
-    });
-    list.addEventListener('click', e => { const o = e.target.closest('.combo__opt'); if (o) pick(+o.dataset.i); });
-    document.addEventListener('click', e => { if (!pop.hidden && !el.contains(e.target)) close(false); });
-    return { setLabel: t => { $('.combo__val', el).textContent = t; } };
-  }
 
   /* ---------- matching: a clear contrast in weight layers best ---------- */
   function ranked() {
@@ -104,7 +54,7 @@
   const scentItem = (p, selected, sub) => ({ value: p.id, text: tx(p.name), sub: sub || `${brandOf(p)} · ${tx(fam(p.family))}`,
     search: `${tx(p.name)} ${brandOf(p)} ${allNotes(p).join(' ')}`, hue: fam(p.family).hue, img: p.img, selected });
 
-  const comboA = combo($('#combo-a'), {
+  const comboA = AM.ui.combo($('#combo-a'), {
     labelId: 'mix-a-label', placeholder: T.pickA,
     groups: () => [
       { label: T.scents, items: AM.PRODUCTS.map(p => scentItem(p, first?.kind === 'scent' && first.v === p.id)) },
@@ -112,7 +62,7 @@
     ],
     onPick: v => { first = String(v).startsWith('note:') ? { kind: 'note', v: v.slice(5) } : { kind: 'scent', v }; second = ranked()[0]?.p.id || null; update(); }
   });
-  const comboB = combo($('#combo-b'), {
+  const comboB = AM.ui.combo($('#combo-b'), {
     labelId: 'mix-b-label', placeholder: T.pickB,
     groups: () => {
       const r = ranked();

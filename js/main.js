@@ -16,6 +16,7 @@
       shipLeft: n => `أضف ${n} لتحصل على شحن مجاني`, shipDone: 'وصلت للشحن المجاني', remove: 'إزالة',
       size: 'الحجم', close: 'إغلاق', compareAdded: 'أُضيف للمقارنة', themeEvening: 'مسائي', themeMorning: 'صباحي',
       off: n => `خصم ${n}٪`, cur: 'د.إ',
+      search: 'ابحث بالاسم أو الماركة أو النوتة…', noResults: 'لا نتائج',
       add: 'أضف للسلة', buy: 'اشترِ الآن', use: 'الاستخدام', perf: 'الأداء', longevity: 'ثبات', sillage: 'فوحان'
     },
     en: {
@@ -28,6 +29,7 @@
       shipLeft: n => `Add ${n} for free shipping`, shipDone: 'You have free shipping', remove: 'Remove',
       size: 'Size', close: 'Close', compareAdded: 'Added to compare', themeEvening: 'Evening', themeMorning: 'Morning',
       off: n => `${n}% off`, cur: 'AED',
+      search: 'Search by name, brand or note…', noResults: 'No results',
       add: 'Add to bag', buy: 'Buy now', use: 'Use', perf: 'Performance', longevity: 'Longevity', sillage: 'Sillage'
     }
   }[L];
@@ -240,6 +242,61 @@
     return `<label class="size"><input type="radio" name="${name}-size" value="${s}" ${checked ? 'checked' : ''}><span>${lbl}${price}</span></label>`;
   }
 
+  /* ---------- searchable dropdown (layering, compare) ---------- */
+  function combo(el, { labelId, label: aria, placeholder, groups, onPick }) {
+    const id = el.id;
+    el.innerHTML = `
+      <button class="combo__btn" type="button" aria-haspopup="listbox" aria-expanded="false" ${labelId ? `aria-labelledby="${labelId} ${id}-val"` : `aria-label="${esc(aria || placeholder)}"`}>
+        <span class="combo__val" id="${id}-val">${placeholder}</span>${icon('arrow', 'ico combo__chev')}</button>
+      <div class="combo__pop" hidden>
+        <label class="combo__search">${icon('search')}<input type="search" placeholder="${STR.search}" aria-label="${STR.search}" autocomplete="off"></label>
+        <ul class="combo__list" role="listbox" ${labelId ? `aria-labelledby="${labelId}"` : `aria-label="${esc(aria || placeholder)}"`}></ul>
+      </div>`;
+    const btn = $('.combo__btn', el), pop = $('.combo__pop', el), input = $('input', el), list = $('.combo__list', el);
+    let items = [], active = -1;
+    const match = (it, q) => !q || (it.search || it.text).toLowerCase().includes(q);
+    function render() {
+      const q = input.value.trim().toLowerCase();
+      items = [];
+      list.innerHTML = groups().map(g => {
+        const its = g.items.filter(it => match(it, q));
+        if (!its.length) return '';
+        return (g.label ? `<li class="combo__group" role="presentation">${g.label}</li>` : '') + its.map(it => {
+          items.push(it);
+          return `<li class="combo__opt" role="option" id="${id}-o${items.length - 1}" data-i="${items.length - 1}" aria-selected="${!!it.selected}" style="--fam:${it.hue}">
+            ${it.img ? `<img src="${ASSETS}${it.img}" alt="" loading="lazy">` : '<span class="dot"></span>'}
+            <span><b>${esc(it.text)}</b>${it.sub ? `<small>${esc(it.sub)}</small>` : ''}</span></li>`;
+        }).join('');
+      }).join('') || `<li class="combo__empty">${STR.noResults}</li>`;
+      setActive(items.findIndex(it => it.selected));
+    }
+    function setActive(i) {
+      active = i;
+      $$('.combo__opt', list).forEach(o => o.classList.toggle('is-active', +o.dataset.i === i));
+      const o = $(`[data-i="${i}"]`, list);
+      input.setAttribute('aria-activedescendant', o ? o.id : '');
+      o?.scrollIntoView({ block: 'nearest' });
+    }
+    const open = () => { pop.hidden = false; btn.setAttribute('aria-expanded', 'true'); input.value = ''; render(); input.focus(); };
+    const close = (focus = true) => { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); if (focus) btn.focus(); };
+    const pick = i => { const it = items[i]; if (!it) return; close(); onPick(it.value); };
+    btn.addEventListener('click', () => (pop.hidden ? open() : close()));
+    input.addEventListener('input', render);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown') { setActive(Math.min(items.length - 1, active + 1)); e.preventDefault(); }
+      else if (e.key === 'ArrowUp') { setActive(Math.max(0, active - 1)); e.preventDefault(); }
+      else if (e.key === 'Enter') { pick(active >= 0 ? active : 0); e.preventDefault(); }
+      else if (e.key === 'Escape') close();
+    });
+    list.addEventListener('click', e => { const o = e.target.closest('.combo__opt'); if (o) pick(+o.dataset.i); });
+    const outside = e => {
+      if (!el.isConnected) return document.removeEventListener('click', outside); // the page re-rendered this dropdown
+      if (!pop.hidden && !el.contains(e.target)) close(false);
+    };
+    document.addEventListener('click', outside);
+    return { setLabel: t => { $('.combo__val', el).textContent = t; } };
+  }
+
   /* ---------- toast ---------- */
   let toastT;
   function toast(msg) {
@@ -320,5 +377,5 @@
   syncCounts(); syncTheme(); renderCart(); initTrail(); observe();
 
   /* public API for page scripts */
-  AM.ui = { keyNote, display, gridVars, L, STR, tx, money, esc, $, $$, store, byId, fam, sizesOf, minPrice, priceOf, discount, notesOf, label, icon, drop, ph, card, isFav, toggleFav, addToCart, openQV, sizeRadio, toast, observe, cartCount };
+  AM.ui = { combo, keyNote, display, gridVars, L, STR, tx, money, esc, $, $$, store, byId, fam, sizesOf, minPrice, priceOf, discount, notesOf, label, icon, drop, ph, card, isFav, toggleFav, addToCart, openQV, sizeRadio, toast, observe, cartCount };
 })();
