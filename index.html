@@ -185,11 +185,20 @@
           <span class="t-num">05</span>
           <h2 class="t-title" id="s5">ركّب عطرك</h2>
         </div>
-        <p class="lead" style="margin-bottom:var(--s-6)">اختر نوتتين أو عطرين للوصول إلى تركيبة مزدوجة. القاعدة الذهبية: الأثقل أولًا على البشرة، ثم الأخف فوقه.</p>
-        <div class="pickers">
-          <div class="picker" id="mix-a"></div>
-          <span class="plus" aria-hidden="true">+</span>
-          <div class="picker" id="mix-b"></div>
+        <p class="lead" style="margin-bottom:var(--s-6)">اختر عطرك الأول أو نوتة تحبها، ونقترح عليك العطور التي تتناغم معها. القاعدة الذهبية: الأثقل أولًا على البشرة، ثم الأخف فوقه.</p>
+        <div class="mixer">
+          <div class="mixer__first">
+            <label class="mixer__label" for="mix-first"><span class="mixer__step">1</span>اختر عطرك الأول أو نوتة</label>
+            <div class="select-wrap"><select class="select select--lg" id="mix-first"></select></div>
+            <div class="mixer__info" id="mix-first-info" aria-live="polite"></div>
+          </div>
+          <div class="mixer__second">
+            <div class="mixer__head">
+              <p class="mixer__label"><span class="mixer__step">2</span>يتناغم معه</p>
+              <div class="shelf-nav"><button class="circle-btn" type="button" id="mix-prev" aria-label="السابق"><svg class="ico rev" aria-hidden="true"><use href="#i-arrow"/></svg></button><button class="circle-btn" type="button" id="mix-next" aria-label="التالي"><svg class="ico flip" aria-hidden="true"><use href="#i-arrow"/></svg></button></div>
+            </div>
+            <div class="mix-slides" id="mix-slides" aria-live="polite"></div>
+          </div>
         </div>
         <div class="mix-result" id="mix-result" aria-live="polite"></div>
         <div class="mix-examples">
