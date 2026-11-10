@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="../css/style.css?v=202611101426">
+<link rel="stylesheet" href="../css/style.css?v=202611102342">
 <script>try{var t=localStorage.getItem('am_theme');if(t)document.documentElement.dataset.theme=JSON.parse(t)}catch(e){}</script>
 </head>
 <body>
@@ -108,7 +108,6 @@
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner">
         <div class="t-head reveal">
-          <span class="t-num">01</span>
           <h2 class="t-title" id="shelf-new">New in</h2>
           <a class="link-drop t-more" href="shop.html?cat=new">View all <svg class="drop" viewBox="0 0 24 32" aria-hidden="true"><use href="#i-drop"/></svg></a>
           <div class="shelf-nav"><button class="circle-btn" type="button" data-shelf-prev aria-label="Previous"><svg class="ico rev" aria-hidden="true"><use href="#i-arrow"/></svg></button><button class="circle-btn" type="button" data-shelf-next aria-label="Next"><svg class="ico flip" aria-hidden="true"><use href="#i-arrow"/></svg></button></div>
@@ -122,13 +121,13 @@
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner">
         <div class="t-head reveal">
-          <span class="t-num">02</span>
           <h2 class="t-title" id="s3">Explore by family</h2>
         </div>
         <p class="lead" style="margin-bottom:var(--s-6)">Nine fragrance families from lightest to deepest. Pick one to see its scents.</p>
-        <div class="wheel-wrap">
-          <svg class="wheel" id="wheel" viewBox="0 0 400 400" role="group" aria-label="Fragrance family wheel"></svg>
-          <div class="wheel-side" id="wheel-side" aria-live="polite"></div>
+        <div class="fams">
+          <div class="fams__scale" id="fam-scale" role="tablist" aria-label="Fragrance families, lightest to deepest"></div>
+          <div class="fams__legend" aria-hidden="true"><span>Lightest</span><span>Deepest</span></div>
+          <div class="fams__panel" id="fam-panel" role="tabpanel" aria-live="polite"></div>
         </div>
       </div>
     </section>
@@ -137,7 +136,6 @@
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner">
         <div class="t-head reveal">
-          <span class="t-num">03</span>
           <h2 class="t-title" id="shelf-best">Best sellers</h2>
           <a class="link-drop t-more" href="shop.html?cat=best">View all <svg class="drop" viewBox="0 0 24 32" aria-hidden="true"><use href="#i-drop"/></svg></a>
           <div class="shelf-nav"><button class="circle-btn" type="button" data-shelf-prev aria-label="Previous"><svg class="ico rev" aria-hidden="true"><use href="#i-arrow"/></svg></button><button class="circle-btn" type="button" data-shelf-next aria-label="Next"><svg class="ico flip" aria-hidden="true"><use href="#i-arrow"/></svg></button></div>
@@ -151,23 +149,22 @@
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner">
         <div class="t-head reveal">
-          <span class="t-num">04</span>
           <h2 class="t-title" id="s4">Scent by weather</h2>
         </div>
         <div class="weather">
           <a class="wcol" href="shop.html?weather=hot">
             <span class="wcol__deg">30<sup>°+</sup></span>
-            <h3>Hot weather</h3><p class="muted">Citrus, aquatic, green</p>
+            <h3>Hot weather <span class="wcol__s">Summer</span></h3><p class="muted">Citrus, aquatic, green</p>
             <span class="eyebrow" data-wcount="hot"></span>
           </a>
           <a class="wcol" href="shop.html?weather=moderate">
             <span class="wcol__deg">20–29<sup>°</sup></span>
-            <h3>Mild weather</h3><p class="muted">Floral, aromatic, fruity</p>
+            <h3>Mild weather <span class="wcol__s">Spring &amp; autumn</span></h3><p class="muted">Floral, aromatic, fruity</p>
             <span class="eyebrow" data-wcount="moderate"></span>
           </a>
           <a class="wcol" href="shop.html?weather=cold">
             <span class="wcol__deg">≤19<sup>°</sup></span>
-            <h3>Cold weather</h3><p class="muted">Oriental, woody, gourmand</p>
+            <h3>Cold weather <span class="wcol__s">Winter</span></h3><p class="muted">Amber, woody, gourmand</p>
             <span class="eyebrow" data-wcount="cold"></span>
           </a>
           <a class="wcol wcol--all" href="shop.html?season=all">
@@ -182,22 +179,19 @@
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner">
         <div class="t-head reveal">
-          <span class="t-num">05</span>
           <h2 class="t-title" id="s5">Layer your scent</h2>
         </div>
         <p class="lead" style="margin-bottom:var(--s-6)">Pick your first scent or a note you love, and we suggest the scents that pair with it. The golden rule: deeper first on skin, lighter on top.</p>
         <div class="mixer">
-          <div class="mixer__first">
-            <label class="mixer__label" for="mix-first"><span class="mixer__step">1</span>Pick your first scent or a note</label>
-            <div class="select-wrap"><select class="select select--lg" id="mix-first"></select></div>
-            <div class="mixer__info" id="mix-first-info" aria-live="polite"></div>
+          <div class="mixer__col">
+            <p class="mixer__label" id="mix-a-label"><span class="mixer__step">1</span>Pick your first scent or a note</p>
+            <div class="combo" id="combo-a"></div>
+            <div class="mixer__info" id="mix-a-info" aria-live="polite"></div>
           </div>
-          <div class="mixer__second">
-            <div class="mixer__head">
-              <p class="mixer__label"><span class="mixer__step">2</span>Pairs well with</p>
-              <div class="shelf-nav"><button class="circle-btn" type="button" id="mix-prev" aria-label="Previous"><svg class="ico rev" aria-hidden="true"><use href="#i-arrow"/></svg></button><button class="circle-btn" type="button" id="mix-next" aria-label="Next"><svg class="ico flip" aria-hidden="true"><use href="#i-arrow"/></svg></button></div>
-            </div>
-            <div class="mix-slides" id="mix-slides" aria-live="polite"></div>
+          <div class="mixer__col">
+            <p class="mixer__label" id="mix-b-label"><span class="mixer__step">2</span>Pick the second scent</p>
+            <div class="combo" id="combo-b"></div>
+            <div class="mixer__info" id="mix-b-info" aria-live="polite"></div>
           </div>
         </div>
         <div class="mix-result" id="mix-result" aria-live="polite"></div>
@@ -212,7 +206,6 @@
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner">
         <div class="t-head reveal">
-          <span class="t-num">06</span>
           <h2 class="t-title" id="shelf-unisex">Unisex scents</h2>
           <a class="link-drop t-more" href="shop.html?gender=unisex">View all <svg class="drop" viewBox="0 0 24 32" aria-hidden="true"><use href="#i-drop"/></svg></a>
           <div class="shelf-nav"><button class="circle-btn" type="button" data-shelf-prev aria-label="Previous"><svg class="ico rev" aria-hidden="true"><use href="#i-arrow"/></svg></button><button class="circle-btn" type="button" data-shelf-next aria-label="Next"><svg class="ico flip" aria-hidden="true"><use href="#i-arrow"/></svg></button></div>
@@ -226,25 +219,32 @@
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner">
         <div class="t-head reveal">
-          <span class="t-num">07</span>
           <h2 class="t-title" id="s6">The annual four — all you need</h2>
         </div>
-        <p class="lead" style="margin-bottom:var(--s-5)">Pick a price tier, or swap any scent in the table, then add the whole set to your bag.</p>
-        <div class="tier-tabs" role="group" aria-label="Price tier" id="tiers"></div>
-        <div class="table-scroll"><table class="matrix matrix--pick" id="matrix"></table></div>
-        <div class="set-sum" id="set-sum" aria-live="polite"></div>
-        <div class="style-row">
-          <p class="eyebrow">Your style — <span class="muted">pick the closest and we suggest a scent</span></p>
-          <div class="chips" id="styles" role="group" aria-label="Style"></div>
-          <div id="style-out" aria-live="polite"></div>
+        <p class="lead" style="margin-bottom:var(--s-5)">Set your price and the families you love, and we suggest a scent for each use. Pick one per row, or leave a row empty.</p>
+        <div class="af">
+          <div class="af__group">
+            <p class="mixer__label"><span class="mixer__step">1</span>Price per scent</p>
+            <div class="af__price">
+              <label><span>From</span><input id="af-min" type="number" inputmode="numeric" min="0"></label>
+              <label><span>To</span><input id="af-max" type="number" inputmode="numeric" min="0"></label>
+              <span class="muted">AED</span>
+            </div>
+          </div>
+          <div class="af__group">
+            <p class="mixer__label"><span class="mixer__step">2</span>Families you love <small class="muted">(one or more)</small></p>
+            <div class="chips" id="af-fams" role="group" aria-label="Fragrance families"></div>
+          </div>
         </div>
+        <div class="af__rows" id="af-rows" aria-live="polite"></div>
+        <div class="set-sum" id="set-sum" aria-live="polite"></div>
       </div>
     </section>
     <section class="t-sec" aria-labelledby="s2">
       <span class="t-node" aria-hidden="true"><svg class="drop" viewBox="0 0 24 32"><use href="#i-drop"/></svg></span>
       <div class="inner ask">
         <div>
-          <div class="t-head reveal" style="margin-bottom:var(--s-4)"><span class="t-num">08</span><span class="eyebrow">Scent explorer — three questions</span></div>
+          <div class="t-head reveal" style="margin-bottom:var(--s-4)"><span class="eyebrow">Scent explorer — three questions</span></div>
           <h2 class="ask__q reveal" id="s2">When do you<br>usually wear scent?</h2>
         </div>
         <div class="ask__opts">
@@ -356,8 +356,9 @@
   <button class="icon-btn qv__close" type="button" data-close-qv aria-label="Close"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
 </dialog>
 
-<script src="../js/products.js?v=202611101426" defer></script>
-<script src="../js/main.js?v=202611101426" defer></script>
-<script src="../js/home.js?v=202611101426" defer></script><script src="../js/display-settings.js?v=202611101426" defer></script><script src="../js/explorer-modal.js?v=202611101426" defer></script><script src="../js/family-wheel.js?v=202611101426" defer></script><script src="../js/compose-mix.js?v=202611101426" defer></script><script src="../js/annual-set.js?v=202611101426" defer></script>
+<script src="../js/products.js?v=202611102342" defer></script>
+<script src="../js/catalog.js?v=202611102342" defer></script>
+<script src="../js/main.js?v=202611102342" defer></script>
+<script src="../js/home.js?v=202611102342" defer></script><script src="../js/display-settings.js?v=202611102342" defer></script><script src="../js/explorer-modal.js?v=202611102342" defer></script><script src="../js/family-picker.js?v=202611102342" defer></script><script src="../js/compose-mix.js?v=202611102342" defer></script><script src="../js/annual-set.js?v=202611102342" defer></script>
 </body>
 </html>

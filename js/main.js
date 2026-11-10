@@ -62,13 +62,16 @@
   const icon = (name, cls = 'ico') => `<svg class="${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
   const drop = (cls = 'drop') => `<svg class="${cls}" viewBox="0 0 24 32" aria-hidden="true"><use href="#i-drop"/></svg>`;
 
-  /* ---------- placeholder image ---------- */
+  /* ---------- product image inside the shape (falls back to a labelled placeholder) ---------- */
   const ph = (p, shape = 'arch') => {
     const f = fam(p.family);
     const cls = shape === 'arch' || shape === true ? ' ph--arch' : shape === 'dome' ? ' ph--dome' : '';
-    return `<div class="ph${cls}" style="--fam:${f.hue}" role="img" aria-label="${esc(STR.photo)}: ${esc(tx(p.name))}">
-      <span class="ph-label"><b>${esc(tx(f))}</b>${STR.photo}</span></div>`;
+    const inner = p.img
+      ? `<img class="ph-img" src="${ASSETS}${p.img}" alt="${esc(tx(p.name))}" loading="lazy" decoding="async">`
+      : `<span class="ph-label"><b>${esc(tx(f))}</b>${STR.photo}</span>`;
+    return `<div class="ph${cls}" style="--fam:${f.hue}"${p.img ? '' : ` role="img" aria-label="${esc(STR.photo)}: ${esc(tx(p.name))}"`}>${inner}</div>`;
   };
+  const keyNote = p => { const n = notesOf(p); return n.heart[0] || n.top[0] || n.base[0] || ''; };
 
   /* ---------- favourites ---------- */
   let favs = new Set(store.get('am_fav', []));
@@ -134,9 +137,11 @@
       </article>`;
     }
 
-    const start = [esc(notesOf(p).heart[0]), esc(label('season', p.season[0])), esc(label('time', p.time.length > 1 ? 'all' : p.time[0]))]
-      .map(t => `<span class="tag">${t}</span>`);
-    const end = p.badges.slice(0, 3).map(b => `<span class="tag tag--soft">${esc(label('badges', b))}</span>`);
+    const start = [esc(keyNote(p)), esc(label('season', p.season[0])), esc(label('time', p.time.length > 1 ? 'all' : p.time[0]))]
+      .filter(Boolean).map(t => `<span class="tag">${t}</span>`);
+    // the store's promotion title first, then the house badges
+    const end = [...(p.promo ? [esc(p.promo)] : []), ...p.badges.map(b => esc(label('badges', b)))].slice(0, 3)
+      .map(t => `<span class="tag tag--soft">${t}</span>`);
     return `<article class="pcard pcard--normal fade" data-id="${p.id}">
       <div class="pcard__media">
         ${ph(p)}${oos}
@@ -229,6 +234,7 @@
     dlg.showModal();
   }
   function sizeRadio(p, s, checked, name) {
+    if (s === 'sample' && !p.sample) return ''; // the store sells no sample of this scent
     const lbl = s === 'sample' ? `${STR.sample}<small>2 ${STR.ml}</small>` : `${s} ${STR.ml}<small>${money(p.sizes[s])}</small>`;
     const price = s === 'sample' ? `<small>${money(p.sample)}</small>` : '';
     return `<label class="size"><input type="radio" name="${name}-size" value="${s}" ${checked ? 'checked' : ''}><span>${lbl}${price}</span></label>`;
@@ -314,5 +320,5 @@
   syncCounts(); syncTheme(); renderCart(); initTrail(); observe();
 
   /* public API for page scripts */
-  AM.ui = { display, gridVars, L, STR, tx, money, esc, $, $$, store, byId, fam, sizesOf, minPrice, priceOf, discount, notesOf, label, icon, drop, ph, card, isFav, toggleFav, addToCart, openQV, sizeRadio, toast, observe, cartCount };
+  AM.ui = { keyNote, display, gridVars, L, STR, tx, money, esc, $, $$, store, byId, fam, sizesOf, minPrice, priceOf, discount, notesOf, label, icon, drop, ph, card, isFav, toggleFav, addToCart, openQV, sizeRadio, toast, observe, cartCount };
 })();

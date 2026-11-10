@@ -61,19 +61,6 @@
   const sz = sizesOf(p);
   const defSize = sz.includes(50) ? 50 : sz[0];
 
-  // pyramid drawn in the logo's arch: three tiers clipped to the "A"
-  const pyramid = `<svg class="pyr__svg" viewBox="0 0 300 262" role="img" aria-label="${T.pyramid}">
-    <defs><clipPath id="aclip"><path d="M150 4C190 60 280 170 296 258H4C20 170 110 60 150 4z"/></clipPath></defs>
-    <g clip-path="url(#aclip)">
-      <rect class="tier" x="0" y="0" width="300" height="98" fill="#E6C98F"/>
-      <rect class="tier" x="0" y="102" width="300" height="76" fill="#B08A4E"/>
-      <rect class="tier tier--base" x="0" y="182" width="300" height="80"/>
-    </g>
-    <path d="M150 4C190 60 280 170 296 258H4C20 170 110 60 150 4z" fill="none" stroke="var(--gold-400)" stroke-width="1" opacity=".6"/>
-    <text x="150" y="80" fill="#141C33">${T.top}</text>
-    <text x="150" y="146" fill="#fff">${T.heart}</text>
-    <text x="150" y="226" fill="#F2EADB">${T.base}</text>
-  </svg>`;
 
   // payment marks are drawn once in the footer; reuse them here
   const mark = name => document.querySelector(`.pay-mark[aria-label="${name}"]`)?.outerHTML || `<b>${name}</b>`;
@@ -87,7 +74,7 @@
       <a href="shop.html?family=${f.id}">${esc(tx(f))}</a><span aria-hidden="true">/</span><span aria-current="page">${esc(tx(p.name))}</span></nav>
 
     <section class="pdp">
-      <div class="pdp__media">${ph(p)}${p.badges.length ? `<div class="pcard__tags pcard__tags--top"><div class="tags"></div><div class="tags tags--end">${p.badges.map(b => `<span class="tag tag--soft">${esc(label('badges', b))}</span>`).join('')}</div></div>` : ''}</div>
+      <div class="pdp__media">${ph(p)}${(p.promo || p.badges.length) ? `<div class="pdp__promo">${[...(p.promo ? [esc(p.promo)] : []), ...p.badges.map(b => esc(label('badges', b)))].map(t => `<span class="tag tag--soft">${t}</span>`).join('')}</div>` : ''}</div>
 
       <div class="pdp__info">
         <span class="${ar ? 'eyebrow' : 'caps'}">${esc(brand)}</span>
@@ -108,8 +95,8 @@
         <div class="pbox"><p class="pbox__title">${icon('truck')} ${T.delivery}</p><ul class="pbox__list">${T.deliveryList.map(x => `<li>${x}</li>`).join('')}</ul></div>
 
         <div class="pbox"><p class="pbox__title">${T.sizes}</p><div class="sizes" id="sizes">${sz.map(s => sizeRadio(p, s, s === defSize, 'pdp')).join('')}</div></div>
-        <div class="pbox"><p class="pbox__title">${T.sample}</p><div class="sizes" id="sample">${sizeRadio(p, 'sample', false, 'pdp')}</div>
-          <p class="filter-note">${T.sampleNote}</p></div>
+        ${p.sample ? `<div class="pbox"><p class="pbox__title">${T.sample}</p><div class="sizes" id="sample">${sizeRadio(p, 'sample', false, 'pdp')}</div>
+          <p class="filter-note">${T.sampleNote}</p></div>` : ''}
 
         <div class="pbox pbox--buy">
           <div class="pbox__row">
@@ -124,9 +111,9 @@
 
       <div class="pdp__acc accord">
         <details open><summary>${T.pyramid}</summary><div class="body">
-          <div class="pyr pyr--stack">${pyramid}<div class="pyr__list">
-            ${['top', 'heart', 'base'].map((k, i) => `<div class="pyr__item"><span class="k">${i + 1}</span><h3>${T[k]}</h3><p>${T[k + 'D']}</p><p class="notes">${n[k].map(esc).join(' · ')}</p></div>`).join('')}
-          </div></div></div></details>
+          <div class="pyr__list">
+            ${['top', 'heart', 'base'].filter(k => n[k].length).map((k, i) => `<div class="pyr__item"><span class="k">${i + 1}</span><h3>${T[k]}</h3><p>${T[k + 'D']}</p><p class="notes">${n[k].map(esc).join(' · ')}</p></div>`).join('')}
+          </div></div></details>
         <details><summary>${ar ? 'الاستخدام' : 'Use'}</summary><div class="body">
           <dl class="usage">
             <div><dt>${T.season}</dt><dd>${tags('season', p.season)}</dd></div>

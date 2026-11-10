@@ -1,27 +1,31 @@
-/* Compose (home component): pick the first scent or note from a select → matching scents appear as slides →
-   pick a slide to see the layered blend and wear order. */
+/* Compose (home component): two searchable dropdowns — the first scent (or a note) and the second scent,
+   whose list starts with the best matches — then the layered blend and how to wear it. */
 (() => {
-  const { L, tx, $, $$, esc, card, observe, byId, fam, notesOf, money, minPrice, sizesOf, addToCart, label } = AM.ui;
+  const { L, tx, $, $$, esc, card, observe, byId, fam, notesOf, money, minPrice, sizesOf, addToCart, label, icon } = AM.ui;
   if (!$('#mix-result')) return;
   const ar = L === 'ar';
   const F = AM.FAMILIES;
   const famIdx = id => F.findIndex(f => f.id === id);
   const allNotes = p => { const n = notesOf(p); return [...n.top, ...n.heart, ...n.base]; };
+  const brandOf = p => tx(AM.BRANDS.find(b => b.id === p.brand)) || '';
+  const sep = ar ? '، ' : ', ';
 
   // notes index: note → family of the first scent that carries it
   const NOTES = [];
   AM.PRODUCTS.forEach(p => allNotes(p).forEach(t => { if (!NOTES.some(x => x.t === t)) NOTES.push({ t, family: p.family }); }));
 
   const T = ar ? {
-    scents: 'العطور', notes: 'النوتات', order: 'طريقة الوضع', addBoth: 'أضف الاثنين للسلة', suggest: 'عطور تحمل هذه النوتة',
-    wear: 'متى تلبسها', light: 'خفيفة ونهارية', mid: 'متوازنة للمساء والدوام', deep: 'عميقة للمناسبات والطقس البارد',
-    pickSlide: 'اختر شريحة من «يتناغم معه» لترى التركيبة.', base: 'يوضع أولًا كقاعدة', top: 'يوضع فوقه كلمسة', same: 'يكثّف نفس الطابع',
-    pick: 'اختر', picked: 'مختار', note: 'نوتة', both: 'الحجمان الأصغر معًا', blend: 'التركيبة الناتجة'
+    scents: 'العطور', notes: 'النوتات', suggested: 'مقترح لك', all: 'كل العطور', search: 'ابحث بالاسم أو الماركة أو النوتة…',
+    pickA: 'اختر عطرًا أو نوتة', pickB: 'اختر العطر الثاني', none: 'لا نتائج', note: 'نوتة',
+    order: 'طريقة الوضع', addBoth: 'أضف الاثنين للسلة', suggest: 'عطور تحمل هذه النوتة', wear: 'متى تلبسها',
+    light: 'خفيفة ونهارية', mid: 'متوازنة للمساء والدوام', deep: 'عميقة للمناسبات والطقس البارد',
+    base: 'يوضع أولًا كقاعدة', top: 'يوضع فوقه كلمسة', same: 'يكثّف نفس الطابع', both: 'الحجمان الأصغر معًا', blend: 'التركيبة الناتجة'
   } : {
-    scents: 'Scents', notes: 'Notes', order: 'How to wear it', addBoth: 'Add both to bag', suggest: 'Scents carrying this note',
-    wear: 'When to wear it', light: 'light and daytime', mid: 'balanced for evenings and work', deep: 'deep, for occasions and cold weather',
-    pickSlide: 'Pick a slide under “Pairs well with” to see the blend.', base: 'Goes on first, as the base', top: 'Goes on top, as a lift', same: 'Deepens the same character',
-    pick: 'Choose', picked: 'Selected', note: 'Note', both: 'Both smallest sizes', blend: 'Your blend'
+    scents: 'Scents', notes: 'Notes', suggested: 'Suggested for you', all: 'All scents', search: 'Search by name, brand or note…',
+    pickA: 'Pick a scent or a note', pickB: 'Pick the second scent', none: 'No results', note: 'Note',
+    order: 'How to wear it', addBoth: 'Add both to bag', suggest: 'Scents carrying this note', wear: 'When to wear it',
+    light: 'light and daytime', mid: 'balanced for evenings and work', deep: 'deep, for occasions and cold weather',
+    base: 'Goes on first, as the base', top: 'Goes on top, as a lift', same: 'Deepens the same character', both: 'Both smallest sizes', blend: 'Your blend'
   };
 
   let first = null;   // { kind: 'scent'|'note', v }
@@ -29,20 +33,65 @@
   const familyOf = s => s.kind === 'scent' ? byId(s.v).family : NOTES.find(n => n.t === s.v).family;
   const nameOf = s => s.kind === 'scent' ? tx(byId(s.v).name) : s.v;
 
-  // ---- step 1: the select (scents + notes) ----
-  const sel = $('#mix-first');
-  sel.innerHTML = `<optgroup label="${T.scents}">${AM.PRODUCTS.map(p => `<option value="scent:${p.id}">${esc(tx(p.name))} — ${esc(tx(fam(p.family)))}</option>`).join('')}</optgroup>
-    <optgroup label="${T.notes}">${NOTES.map(n => `<option value="note:${esc(n.t)}">${esc(n.t)}</option>`).join('')}</optgroup>`;
-  const readSel = () => { const [kind, ...v] = sel.value.split(':'); return { kind, v: v.join(':') }; };
+  /* ---------- searchable dropdown ---------- */
+  function combo(el, { labelId, placeholder, groups, onPick }) {
+    const id = el.id;
+    el.innerHTML = `
+      <button class="combo__btn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="${labelId} ${id}-val">
+        <span class="combo__val" id="${id}-val">${placeholder}</span>${icon('arrow', 'ico combo__chev')}</button>
+      <div class="combo__pop" hidden>
+        <label class="combo__search">${icon('search')}<input type="search" placeholder="${T.search}" aria-label="${T.search}" autocomplete="off"></label>
+        <ul class="combo__list" role="listbox" aria-labelledby="${labelId}"></ul>
+      </div>`;
+    const btn = $('.combo__btn', el), pop = $('.combo__pop', el), input = $('input', el), list = $('.combo__list', el);
+    let items = [], active = -1;
+    const match = (it, q) => !q || (it.search || it.text).toLowerCase().includes(q);
+    function render() {
+      const q = input.value.trim().toLowerCase();
+      items = [];
+      list.innerHTML = groups().map(g => {
+        const its = g.items.filter(it => match(it, q));
+        if (!its.length) return '';
+        return `<li class="combo__group" role="presentation">${g.label}</li>` + its.map(it => {
+          items.push(it);
+          return `<li class="combo__opt" role="option" id="${id}-o${items.length - 1}" data-i="${items.length - 1}" aria-selected="${!!it.selected}" style="--fam:${it.hue}">
+            ${it.img ? `<img src="${(document.documentElement.dataset.root || '')}${it.img}" alt="" loading="lazy">` : '<span class="dot"></span>'}
+            <span><b>${esc(it.text)}</b>${it.sub ? `<small>${esc(it.sub)}</small>` : ''}</span></li>`;
+        }).join('');
+      }).join('') || `<li class="combo__empty">${T.none}</li>`;
+      setActive(items.findIndex(it => it.selected));
+    }
+    function setActive(i) {
+      active = i;
+      $$('.combo__opt', list).forEach(o => o.classList.toggle('is-active', +o.dataset.i === i));
+      const o = $(`[data-i="${i}"]`, list);
+      input.setAttribute('aria-activedescendant', o ? o.id : '');
+      o?.scrollIntoView({ block: 'nearest' });
+    }
+    const open = () => { pop.hidden = false; btn.setAttribute('aria-expanded', 'true'); input.value = ''; render(); input.focus(); };
+    const close = (focus = true) => { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); if (focus) btn.focus(); };
+    const pick = i => { const it = items[i]; if (!it) return; close(); onPick(it.value); };
+    btn.addEventListener('click', () => (pop.hidden ? open() : close()));
+    input.addEventListener('input', render);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown') { setActive(Math.min(items.length - 1, active + 1)); e.preventDefault(); }
+      else if (e.key === 'ArrowUp') { setActive(Math.max(0, active - 1)); e.preventDefault(); }
+      else if (e.key === 'Enter') { pick(active >= 0 ? active : 0); e.preventDefault(); }
+      else if (e.key === 'Escape') close();
+    });
+    list.addEventListener('click', e => { const o = e.target.closest('.combo__opt'); if (o) pick(+o.dataset.i); });
+    document.addEventListener('click', e => { if (!pop.hidden && !el.contains(e.target)) close(false); });
+    return { setLabel: t => { $('.combo__val', el).textContent = t; } };
+  }
 
-  // ---- step 2: scents that pair well, best first ----
-  function matches() {
+  /* ---------- matching: a clear contrast in weight layers best ---------- */
+  function ranked() {
     const fi = famIdx(familyOf(first));
     return AM.PRODUCTS
-      .filter(p => !(first.kind === 'scent' && p.id === first.v))
+      .filter(p => p.inStock && !(first.kind === 'scent' && p.id === first.v))
       .map(p => {
         const d = Math.abs(famIdx(p.family) - fi);
-        let score = d >= 2 && d <= 5 ? 6 - Math.abs(d - 3) : d === 0 ? 2 : 1; // a clear contrast in weight layers best
+        let score = d >= 2 && d <= 5 ? 6 - Math.abs(d - 3) : d === 0 ? 2 : 1;
         if (first.kind === 'scent') {
           const a = byId(first.v);
           if (AM.PAIRINGS.some(x => (x.a === a.id && x.b === p.id) || (x.b === a.id && x.a === p.id))) score += 5;
@@ -50,44 +99,41 @@
         } else if (allNotes(p).includes(first.v)) score += 2;
         return { p, score, rel: d === 0 ? T.same : famIdx(p.family) > fi ? T.base : T.top };
       })
-      .sort((x, y) => y.score - x.score)
-      .slice(0, 8);
+      .sort((x, y) => y.score - x.score || y.p.sold - x.p.sold);
   }
+  const scentItem = (p, selected, sub) => ({ value: p.id, text: tx(p.name), sub: sub || `${brandOf(p)} · ${tx(fam(p.family))}`,
+    search: `${tx(p.name)} ${brandOf(p)} ${allNotes(p).join(' ')}`, hue: fam(p.family).hue, img: p.img, selected });
 
-  function renderFirst() {
-    const f = fam(familyOf(first));
-    const p = first.kind === 'scent' ? byId(first.v) : null;
-    $('#mix-first-info').innerHTML = `<span class="dot" style="--fam:${f.hue}"></span>
-      <span><b>${esc(nameOf(first))}</b> · ${esc(tx(f))}${p ? ` · ${esc(label('conc', p.conc))}` : ` · ${T.note}`}</span>
-      <span class="muted">${esc(p ? allNotes(p).slice(0, 4).join(ar ? '، ' : ', ') : tx(f.notes))}</span>`;
+  const comboA = combo($('#combo-a'), {
+    labelId: 'mix-a-label', placeholder: T.pickA,
+    groups: () => [
+      { label: T.scents, items: AM.PRODUCTS.map(p => scentItem(p, first?.kind === 'scent' && first.v === p.id)) },
+      { label: T.notes, items: NOTES.map(n => ({ value: `note:${n.t}`, text: n.t, sub: tx(fam(n.family)), hue: fam(n.family).hue, selected: first?.kind === 'note' && first.v === n.t })) }
+    ],
+    onPick: v => { first = String(v).startsWith('note:') ? { kind: 'note', v: v.slice(5) } : { kind: 'scent', v }; second = ranked()[0]?.p.id || null; update(); }
+  });
+  const comboB = combo($('#combo-b'), {
+    labelId: 'mix-b-label', placeholder: T.pickB,
+    groups: () => {
+      const r = ranked();
+      return [
+        { label: T.suggested, items: r.slice(0, 6).map(m => scentItem(m.p, m.p.id === second, `${tx(fam(m.p.family))} · ${m.rel}`)) },
+        { label: T.all, items: r.slice(6).map(m => scentItem(m.p, m.p.id === second)) }
+      ];
+    },
+    onPick: v => { second = v; update(); }
+  });
+
+  /* ---------- info boxes + result ---------- */
+  function info(s) {
+    const f = fam(familyOf(s)), p = s.kind === 'scent' ? byId(s.v) : null;
+    return `${p?.img ? `<span class="mixer__thumb">${AM.ui.ph(p)}</span>` : `<span class="dot" style="--fam:${f.hue}"></span>`}
+      <span><b>${esc(nameOf(s))}</b> · ${esc(tx(f))}${p ? ` · ${esc(label('conc', p.conc))}` : ` · ${T.note}`}
+      <small class="muted">${esc(p ? allNotes(p).slice(0, 4).join(sep) : tx(f.notes))}</small></span>`;
   }
-
-  function renderSlides() {
-    const list = matches();
-    // a scent picked from a link (product page) stays in the slides even if it is not in the top matches
-    if (second && second !== first.v && !list.some(m => m.p.id === second)) {
-      const p = byId(second), fi = famIdx(familyOf(first)), pi = famIdx(p.family);
-      list.unshift({ p, rel: pi === fi ? T.same : pi > fi ? T.base : T.top });
-    }
-    if (!second || !list.some(m => m.p.id === second)) second = list[0]?.p.id || null;
-    $('#mix-slides').innerHTML = list.map(({ p, rel }) => {
-      const f = fam(p.family);
-      return `<button class="mix-slide" type="button" data-b="${p.id}" aria-pressed="${p.id === second}" style="--fam:${f.hue}">
-        <span class="mix-slide__img"><span class="ph ph--dome"></span></span>
-        <span class="mix-slide__body"><b>${esc(tx(p.name))}</b>
-          <span class="mix-slide__fam"><span class="dot"></span>${esc(tx(f))}</span>
-          <span class="mix-slide__rel">${rel}</span>
-          <span class="mix-slide__cta">${p.id === second ? T.picked : T.pick}</span></span>
-      </button>`;
-    }).join('');
-    $('#mix-slides').scrollLeft = 0;
-    syncNav();
-  }
-
-  // ---- result ----
   function renderResult() {
     const res = $('#mix-result');
-    if (!second) { res.innerHTML = `<p class="muted">${T.pickSlide}</p>`; return; }
+    if (!first || !second) { res.innerHTML = ''; return; }
     const b = { kind: 'scent', v: second };
     const fa = fam(familyOf(first)), fb = fam(familyOf(b));
     const [deep, light] = famIdx(fa.id) >= famIdx(fb.id) ? [first, b] : [b, first]; // deeper goes first on skin
@@ -97,7 +143,6 @@
     const bothScents = first.kind === 'scent';
     const total = bothScents ? minPrice(byId(first.v)) + minPrice(byId(second)) : 0;
     const carriers = bothScents ? [] : AM.PRODUCTS.filter(p => allNotes(p).includes(first.v)).slice(0, 4);
-
     res.innerHTML = `
       <div class="mix-visual" aria-hidden="true">
         <svg viewBox="0 0 24 32"><use href="#i-drop" fill="${fa.hue}"/></svg><span class="plus" style="font-size:1.6rem">+</span>
@@ -105,7 +150,7 @@
         <svg viewBox="0 0 24 32"><defs><linearGradient id="mixg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${fam(familyOf(light)).hue}"/><stop offset="1" stop-color="${fam(familyOf(deep)).hue}"/></linearGradient></defs><use href="#i-drop" fill="url(#mixg)"/></svg>
       </div>
       <p class="eyebrow">${T.blend}</p>
-      <h3 style="font-size:clamp(1.8rem,4vw,2.8rem)">${esc(title)}</h3>
+      <h3 style="font-size:clamp(1.6rem,3.4vw,2.4rem)">${esc(title)}</h3>
       <div class="split" style="gap:var(--s-5)">
         <div><h4 style="font-size:1.1rem;margin-bottom:var(--s-2)">${T.order}</h4>
           <p>${ar ? `ضع <b>${esc(nameOf(deep))}</b> أولًا على نقاط النبض، وانتظر دقيقة، ثم رشّة من <b>${esc(nameOf(light))}</b> فوقه.`
@@ -120,53 +165,25 @@
     observe(res);
     $('#mix-add')?.addEventListener('click', () => { addToCart(first.v, sizesOf(byId(first.v))[0], 1, true); addToCart(second, sizesOf(byId(second))[0]); });
   }
-
-  const pressExample = () => $$('#mix-examples .chip').forEach(c => {
-    const ex = AM.PAIRINGS[+c.dataset.ex];
-    c.setAttribute('aria-pressed', first?.kind === 'scent' && first.v === ex.a && second === ex.b);
-  });
-  const update = () => { renderFirst(); renderSlides(); renderResult(); pressExample(); };
-  const choose = (a, b) => { sel.value = `scent:${a}`; first = readSel(); second = b; update(); };
-
-  // ---- slides arrows ----
-  const track = $('#mix-slides');
-  const rtl = document.documentElement.dir === 'rtl';
-  function syncNav() {
-    const pos = Math.abs(track.scrollLeft), max = track.scrollWidth - track.clientWidth;
-    $('#mix-prev').disabled = pos <= 2;
-    $('#mix-next').disabled = pos >= max - 2;
+  function update() {
+    comboA.setLabel(nameOf(first));
+    comboB.setLabel(second ? tx(byId(second).name) : T.pickB);
+    $('#mix-a-info').innerHTML = info(first);
+    $('#mix-b-info').innerHTML = second ? info({ kind: 'scent', v: second }) : '';
+    renderResult();
+    $$('#mix-examples .chip').forEach(c => { const ex = AM.PAIRINGS[+c.dataset.ex]; c.setAttribute('aria-pressed', first.kind === 'scent' && first.v === ex.a && second === ex.b); });
   }
-  const step = () => { const c = track.firstElementChild; return c ? c.getBoundingClientRect().width + 16 : track.clientWidth; };
-  const go = dir => track.scrollBy({ left: dir * (rtl ? -1 : 1) * step(), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-  $('#mix-prev').addEventListener('click', () => go(-1));
-  $('#mix-next').addEventListener('click', () => go(1));
-  track.addEventListener('scroll', () => requestAnimationFrame(syncNav), { passive: true });
-  addEventListener('resize', syncNav);
+  const choose = (a, b) => { first = { kind: 'scent', v: a }; second = b || ranked()[0]?.p.id || null; update(); };
 
-  // ---- events ----
-  sel.addEventListener('change', () => { first = readSel(); second = null; update(); });
-  track.addEventListener('click', e => {
-    const s = e.target.closest('.mix-slide'); if (!s) return;
-    second = s.dataset.b;
-    $$('.mix-slide', track).forEach(x => {
-      const on = x === s; x.setAttribute('aria-pressed', on);
-      x.querySelector('.mix-slide__cta').textContent = on ? T.picked : T.pick;
-    });
-    renderResult(); pressExample();
-  });
   $('#mix-examples').innerHTML = AM.PAIRINGS.map((x, i) =>
     `<button class="chip" type="button" data-ex="${i}" aria-pressed="false"><b>${esc(tx(byId(x.a).name))} + ${esc(tx(byId(x.b).name))}</b> · ${esc(tx(x))}</button>`).join('');
-  $('#mix-examples').addEventListener('click', e => { const b = e.target.closest('[data-ex]'); if (b) {
-    const ex = AM.PAIRINGS[+b.dataset.ex]; choose(ex.a, ex.b);
-    // bring the chosen slide into view inside the slider
-    const i = $$('.mix-slide', track).findIndex(s => s.dataset.b === ex.b);
-    if (i > 0) track.scrollBy({ left: i * (rtl ? -1 : 1) * step() });
-  } });
+  $('#mix-examples').addEventListener('click', e => { const b = e.target.closest('[data-ex]'); if (b) { const ex = AM.PAIRINGS[+b.dataset.ex]; choose(ex.a, ex.b); } });
 
   // preselect from the URL (product page links) or show the first example
   const u = new URLSearchParams(location.search);
   if (byId(u.get('a'))) choose(u.get('a'), byId(u.get('b')) ? u.get('b') : null);
-  else choose(AM.PAIRINGS[0].a, AM.PAIRINGS[0].b);
+  else if (AM.PAIRINGS[0]) choose(AM.PAIRINGS[0].a, AM.PAIRINGS[0].b);
+  else choose(AM.PRODUCTS[0].id);
   // content above is rendered by JS, so re-anchor after it settles
   if (location.hash === '#compose') requestAnimationFrame(() => $('#compose').scrollIntoView());
 })();
