@@ -669,8 +669,6 @@ input[type="checkbox"] { accent-color: var(--gold-400); width: 16px; height: 16p
 .style-out { display: grid; gap: var(--s-4); grid-template-columns: 1fr; }
 @media (min-width: 900px) { .style-out { grid-template-columns: 1fr 1.6fr; align-items: center; } }
 
-/* ---------- Compare ---------- */
-html[lang="ar"] 
 /* ---------- Reveal (light motion) ---------- */
 .reveal { opacity: 0; transform: translateY(14px); transition: opacity 400ms var(--ease), transform 400ms var(--ease); }
 .reveal.is-in { opacity: 1; transform: none; }
