@@ -14,7 +14,7 @@
       shipping: 'الشحن', freeShip: 'مجاني', calcLater: 'يُحسب عند الدفع', total: 'الإجمالي',
       checkout: 'إتمام الطلب', checkoutNote: 'زر مؤقت — يُربط ببوابة الدفع عند النقل للمنصة',
       shipLeft: n => `أضف ${n} لتحصل على شحن مجاني`, shipDone: 'وصلت للشحن المجاني', remove: 'إزالة',
-      size: 'الحجم', close: 'إغلاق', compareAdded: 'أُضيف للمقارنة', themeEvening: 'مسائي', themeMorning: 'صباحي',
+      size: 'الحجم', close: 'إغلاق', compareAdded: 'أُضيف للمقارنة', themeToggle: 'الوضع الصباحي',
       off: n => `خصم ${n}٪`, cur: 'د.إ',
       search: 'ابحث بالاسم أو الماركة أو النوتة…', noResults: 'لا نتائج',
       add: 'أضف للسلة', buy: 'اشترِ الآن', use: 'الاستخدام', perf: 'الأداء', longevity: 'ثبات', sillage: 'فوحان'
@@ -27,7 +27,7 @@
       shipping: 'Shipping', freeShip: 'Free', calcLater: 'Calculated at checkout', total: 'Total',
       checkout: 'Checkout', checkoutNote: 'Placeholder — connects to payment once moved to a platform',
       shipLeft: n => `Add ${n} for free shipping`, shipDone: 'You have free shipping', remove: 'Remove',
-      size: 'Size', close: 'Close', compareAdded: 'Added to compare', themeEvening: 'Evening', themeMorning: 'Morning',
+      size: 'Size', close: 'Close', compareAdded: 'Added to compare', themeToggle: 'Morning mode',
       off: n => `${n}% off`, cur: 'AED',
       search: 'Search by name, brand or note…', noResults: 'No results',
       add: 'Add to bag', buy: 'Buy now', use: 'Use', perf: 'Performance', longevity: 'Longevity', sillage: 'Sillage'
@@ -315,8 +315,14 @@
   function syncTheme() {
     const evening = document.documentElement.dataset.theme !== 'morning';
     $$('.theme-btn').forEach(b => {
-      b.innerHTML = `${icon(evening ? 'moon' : 'sun')}<span>${evening ? STR.themeEvening : STR.themeMorning}</span>`;
-      b.setAttribute('aria-pressed', String(!evening));
+      // a switch: on = morning (light), off = evening (dark); no visible words
+      if (!b.querySelector('.theme-btn__track')) {
+        b.innerHTML = `<span class="theme-btn__track">${icon('sun', 'ico theme-btn__sun')}${icon('moon', 'ico theme-btn__moon')}<span class="theme-btn__knob"></span></span>`;
+        b.setAttribute('role', 'switch');
+        b.setAttribute('aria-label', STR.themeToggle);
+        b.removeAttribute('aria-pressed');
+      }
+      b.setAttribute('aria-checked', String(!evening));
     });
   }
 

@@ -1146,3 +1146,21 @@ dialog.settings { width: min(94vw, 460px); }
 .combo { min-width: 0; }
 .combo__val { flex: 1; min-width: 0; text-align: start; }
 @media (max-width: 640px) { .cmp2__item .combo__btn { padding-inline: var(--s-2); font-size: .82rem; gap: var(--s-1); } }
+
+/* ---------- Morning / evening switch (no words) ---------- */
+.theme-btn { padding: 0; height: auto; border: 0; border-radius: 999px; }
+.theme-btn__track {
+  position: relative; display: flex; align-items: center; justify-content: space-between;
+  width: 60px; height: 32px; padding: 0 8px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--line-strong);
+}
+.theme-btn__track .ico { position: relative; z-index: 1; width: 14px; height: 14px; color: var(--muted); transition: color var(--t); }
+.theme-btn__knob {
+  position: absolute; top: 3px; inset-inline-end: 3px; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--gold-400); box-shadow: 0 2px 6px rgba(0, 0, 0, .3);
+  transition: inset-inline-end var(--t) var(--ease);
+}
+.theme-btn[aria-checked="true"] .theme-btn__knob { inset-inline-end: calc(100% - 27px); }
+.theme-btn[aria-checked="false"] .theme-btn__moon, .theme-btn[aria-checked="true"] .theme-btn__sun { color: var(--navy-900); }
+.theme-btn:hover .theme-btn__track { border-color: var(--gold-400); }
+.theme-btn:focus-visible { outline: 2px solid var(--gold-400); outline-offset: 3px; }
