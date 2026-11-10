@@ -142,7 +142,7 @@
     const start = [esc(keyNote(p)), esc(label('season', p.season[0])), esc(label('time', p.time.length > 1 ? 'all' : p.time[0]))]
       .filter(Boolean).map(t => `<span class="tag">${t}</span>`);
     // the store's promotion title first, then the house badges
-    const end = [...(p.promo ? [esc(p.promo)] : []), ...p.badges.map(b => esc(label('badges', b)))].slice(0, 3)
+    const end = [...(tx(p.promo) ? [esc(tx(p.promo))] : []), ...p.badges.map(b => esc(label('badges', b)))].slice(0, 3)
       .map(t => `<span class="tag tag--soft">${t}</span>`);
     return `<article class="pcard pcard--normal fade" data-id="${p.id}">
       <div class="pcard__media">

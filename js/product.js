@@ -74,7 +74,7 @@
       <a href="shop.html?family=${f.id}">${esc(tx(f))}</a><span aria-hidden="true">/</span><span aria-current="page">${esc(tx(p.name))}</span></nav>
 
     <section class="pdp">
-      <div class="pdp__media">${ph(p)}${(p.promo || p.badges.length) ? `<div class="pdp__promo">${[...(p.promo ? [esc(p.promo)] : []), ...p.badges.map(b => esc(label('badges', b)))].map(t => `<span class="tag tag--soft">${t}</span>`).join('')}</div>` : ''}</div>
+      <div class="pdp__media">${ph(p)}${(tx(p.promo) || p.badges.length) ? `<div class="pdp__promo">${[...(tx(p.promo) ? [esc(tx(p.promo))] : []), ...p.badges.map(b => esc(label('badges', b)))].map(t => `<span class="tag tag--soft">${t}</span>`).join('')}</div>` : ''}</div>
 
       <div class="pdp__info">
         <span class="${ar ? 'eyebrow' : 'caps'}">${esc(brand)}</span>

@@ -1185,3 +1185,4 @@ dialog.settings { width: min(94vw, 460px); }
   .hero__tag { position: relative; inset: auto; margin: -36px auto 0; width: max-content; max-width: 90%; text-align: center; justify-items: center; }
   .hero__tag-price { justify-content: center; }
 }
+.pdp__promo .tag { font-size: .85rem; padding: 8px 14px; }
