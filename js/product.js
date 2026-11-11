@@ -13,7 +13,7 @@
     top: 'الافتتاحية', heart: 'القلب', base: 'القاعدة', topD: 'أول ما يُشمّ من العطر', heartD: 'طابع العطر الأساسي', baseD: 'ما يبقى على البشرة أطول مدة',
     perf: 'الأداء', longevity: 'الثبات', sillage: 'الفوحان', weak: 'عادي أو ضعيف', mid: 'متوسط', strong: 'قوي',
     usage: 'أوقات الاستخدام', season: 'الموسم', weather: 'الطقس', time: 'الوقت', occasion: 'المناسبة', place: 'المكان',
-    like: 'قد يعجبك', similar: 'عطور مماثلة', pair: 'ركّب عطرًا', pairLead: 'عطور تنسجم مع هذا العطر عند وضعها معًا — الأخف فوق الأثقل.',
+    similar: 'عطور مماثلة', pair: 'ركّب عطرًا', pairLead: 'عطور تنسجم مع هذا العطر عند وضعها معًا — الأخف فوق الأثقل.',
     layer: 'ركّبهما', notFound: 'لم نجد هذا العطر.', back: 'العودة إلى العطور', ship: 'شحن داخل الإمارات · تغليف الدار مع كل طلب',
     sampleNote: 'العينة 2 مل لتجربة العطر قبل الحجم الكامل.',
     sizes: 'الأحجام', sample: 'العينة', buy: 'اشترِ الآن', sku: 'الرقم التسلسلي',
@@ -28,7 +28,7 @@
     top: 'Top', heart: 'Heart', base: 'Base', topD: 'What you smell first', heartD: 'The core character', baseD: 'What stays on skin longest',
     perf: 'Performance', longevity: 'Longevity', sillage: 'Sillage', weak: 'Soft', mid: 'Moderate', strong: 'Strong',
     usage: 'When to wear', season: 'Season', weather: 'Weather', time: 'Time', occasion: 'Occasion', place: 'Setting',
-    like: 'You may also like', similar: 'Similar scents', pair: 'Layer a scent', pairLead: 'Scents that work with this one when worn together — lighter over deeper.',
+    similar: 'Similar scents', pair: 'Layer a scent', pairLead: 'Scents that work with this one when worn together — lighter over deeper.',
     layer: 'Layer them', notFound: "We couldn't find this fragrance.", back: 'Back to fragrances', ship: 'UAE delivery · house wrapping with every order',
     sampleNote: 'The 2ml sample lets you try the scent before the full size.',
     sizes: 'Sizes', sample: 'Sample', buy: 'Buy now', sku: 'SKU',
@@ -50,8 +50,8 @@
 
   const famI = x => AM.FAMILIES.findIndex(q => q.id === x.family);
   const others = AM.PRODUCTS.filter(x => x.id !== p.id);
-  const similar = others.filter(x => x.family === p.family || x.facets.some(v => p.facets.includes(v))).slice(0, 4);
-  const like = others.filter(x => !similar.includes(x) && x.occasion.some(o => p.occasion.includes(o))).slice(0, 4);
+  const similar = others.filter(x => x.family === p.family || x.facets.some(v => p.facets.includes(v)))
+    .sort((a, b) => (b.inStock - a.inStock) || (b.sold - a.sold)).slice(0, 2);
   const fromPairs = AM.PAIRINGS.filter(q => q.a === p.id || q.b === p.id).map(q => byId(q.a === p.id ? q.b : q.a));
   const pairs = [...new Set([...fromPairs, ...others.filter(x => Math.abs(famI(x) - famI(p)) >= 3)])].slice(0, 3);
 
@@ -130,18 +130,19 @@
           <div class="examples">${pairs.map(x => `<div class="example example--pair">
             <a href="product.html?id=${x.id}">${esc(tx(p.name))} + ${esc(tx(x.name))}</a>
             <a class="link-drop" href="index.html?a=${p.id}&b=${x.id}#compose">${T.layer} ${drop()}</a></div>`).join('')}</div></div></details>
-        <details><summary>${T.like}</summary><div class="body">${relGrid(like)}</div></details>
         <details><summary>${T.similar}</summary><div class="body">${relGrid(similar)}</div></details>
         <details><summary>${ar ? 'قارن' : 'Compare'}</summary><div class="body">
-          <div class="examples">${[...similar, ...like].slice(0, 4).map(x => `<a class="example example--link" href="compare.html?a=${p.id}&b=${x.id}">
+          <div class="examples">${[...similar, ...others.filter(x => !similar.includes(x) && x.family === p.family)].slice(0, 4).map(x => `<a class="example example--link" href="compare.html?a=${p.id}&b=${x.id}">
             <span class="dot" style="background:${fam(x.family).hue}"></span><span>${T.compareWith} ${esc(tx(x.name))}</span>${icon('arrow', 'ico flip')}</a>`).join('')}</div>
           <a class="link-drop" href="compare.html?a=${p.id}" style="margin-top:var(--s-4)">${T.compareOther} ${drop()}</a></div></details>
-        <details id="pdp-reviews"><summary>${ar ? 'التقييمات' : 'Reviews'} <span class="muted">(${reviews.length})</span></summary><div class="body">
-          ${reviews.length ? `<div class="reviews-sum"><b class="num">${rating.toFixed(1)}</b>${starsOf(rating, 'stars--lg')}<span class="muted">${ar ? 'من' : 'from'} ${AM.ui.reviewsCount(reviews.length)}</span></div>
-            <div class="reviews-list">${reviews.map(r => reviewCard(r, false)).join('')}</div>`
-          : `<p class="muted">${ar ? 'لا توجد تقييمات لهذا العطر بعد. كن أول من يقيّمه بعد الشراء.' : 'No reviews for this scent yet. Be the first to review it after your purchase.'}</p>`}
-        </div></details>
       </div>
+    </section>
+
+    <section class="pdp-reviews" id="pdp-reviews" aria-labelledby="pdp-reviews-h">
+      <div class="t-head"><h2 class="t-title" id="pdp-reviews-h">${ar ? 'التقييمات' : 'Reviews'}</h2></div>
+      ${reviews.length ? `<div class="reviews-sum"><b class="num">${rating.toFixed(1)}</b>${starsOf(rating, 'stars--lg')}<span class="muted">${ar ? 'من' : 'from'} ${AM.ui.reviewsCount(reviews.length)}</span></div>
+        <div class="reviews-grid">${reviews.map(r => reviewCard(r, false)).join('')}</div>`
+      : `<p class="muted">${ar ? 'لا توجد تقييمات لهذا العطر بعد. كن أول من يقيّمه بعد الشراء.' : 'No reviews for this scent yet. Be the first to review it after your purchase.'}</p>`}
     </section>`;
 
   $$('.rel-grid', root).forEach(g => AM.ui.gridVars(g, { desktop: 2, mobile: 2 }));
@@ -166,7 +167,6 @@
   $('#add')?.addEventListener('click', () => addToCart(p.id, sel(), clamp(+q.value), 'soft'));
   $('#buy')?.addEventListener('click', () => addToCart(p.id, sel(), clamp(+q.value)));
   $('#notify')?.addEventListener('click', () => toast(T.notifyOk));
-  $('.pdp__rating').addEventListener('click', () => { $('#pdp-reviews').open = true; });
   $('#copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(url); toast(T.copied); } catch { toast(url); } });
   $('#share').addEventListener('click', async () => {
     if (navigator.share) { try { await navigator.share({ title: tx(p.name), url }); } catch { /* cancelled */ } }

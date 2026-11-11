@@ -1237,3 +1237,8 @@ dialog.settings { width: min(94vw, 460px); }
 .pdp__rating:hover span { color: var(--accent-text); }
 .reviews-list { display: grid; gap: var(--s-3); }
 .accord summary .muted { margin-inline: .4em auto; font-size: .9rem; font-family: var(--font-lat); }
+/* product page: reviews as a full-width section at the end */
+.pdp-reviews { padding-block: var(--s-7) var(--s-9); border-top: 1px solid var(--line); scroll-margin-top: calc(var(--header-h) + 8px); }
+.reviews-grid { display: grid; gap: var(--s-4); }
+@media (min-width: 760px) { .reviews-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .reviews-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }

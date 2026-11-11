@@ -305,7 +305,7 @@
     const p = withProduct && r.product ? byId(r.product) : null;
     return `<figure class="review">
       ${starsOf(r.stars)}
-      <blockquote class="review__text">${esc(r.text)}</blockquote>
+      <blockquote class="review__text" dir="auto">${esc(r.text)}</blockquote>
       <figcaption class="review__by"><span class="review__avatar" aria-hidden="true">${esc((r.name || '?').trim().charAt(0))}</span>
         <span><b>${esc(r.name)}</b><small>${esc(r.city)}${r.city ? ' · ' : ''}${fmtDate(r.date)}</small></span></figcaption>
       ${p ? `<a class="review__product" href="product.html?id=${p.id}"><span class="review__thumb">${ph(p)}</span><span>${esc(tx(p.name))}<small>${L === 'ar' ? 'عن هذا العطر' : 'About this scent'}</small></span></a>` : ''}
