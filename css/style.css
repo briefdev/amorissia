@@ -1246,3 +1246,14 @@ dialog.settings { width: min(94vw, 460px); }
 .pdp__perf { display: grid; gap: var(--s-3); padding: var(--s-4); border: 1px solid var(--line); }
 .pdp__perf .perf { grid-template-columns: 1fr 1fr; gap: var(--s-5); }
 @media (max-width: 480px) { .pdp__perf .perf { grid-template-columns: 1fr; gap: var(--s-4); } }
+
+/* compose step 1: two merged dropdowns — what to start from | the pick */
+.mixer__pick { display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); }
+.combo--kind .combo__btn { min-width: 132px; background: var(--surface-2); border-inline-end: 0; font-size: .92rem; color: var(--accent-text); }
+.combo--kind .combo__btn:hover, .combo--kind .combo__btn[aria-expanded="true"] { border-inline-end: 0; }
+.combo--kind .combo__pop { inset-inline-end: auto; min-width: 220px; }
+.combo--kind .combo__opt .dot { display: none; }
+.combo--kind .combo__opt { padding-block: 10px; }
+.combo__opt[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+.combo__opt[aria-disabled="true"]:hover { background: none; }
+@media (max-width: 480px) { .combo--kind .combo__btn { min-width: 0; padding-inline: var(--s-3); gap: var(--s-2); font-size: .85rem; } }

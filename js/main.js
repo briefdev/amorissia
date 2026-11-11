@@ -243,13 +243,13 @@
   }
 
   /* ---------- searchable dropdown (layering, compare) ---------- */
-  function combo(el, { labelId, label: aria, placeholder, groups, onPick }) {
+  function combo(el, { labelId, label: aria, placeholder, groups, onPick, search = true }) {
     const id = el.id;
     el.innerHTML = `
       <button class="combo__btn" type="button" aria-haspopup="listbox" aria-expanded="false" ${labelId ? `aria-labelledby="${labelId} ${id}-val"` : `aria-label="${esc(aria || placeholder)}"`}>
         <span class="combo__val" id="${id}-val">${placeholder}</span>${icon('arrow', 'ico combo__chev')}</button>
       <div class="combo__pop" hidden>
-        <label class="combo__search">${icon('search')}<input type="search" placeholder="${STR.search}" aria-label="${STR.search}" autocomplete="off"></label>
+        <label class="combo__search"${search ? '' : ' hidden'}>${icon('search')}<input type="search" placeholder="${STR.search}" aria-label="${STR.search}" autocomplete="off"></label>
         <ul class="combo__list" role="listbox" ${labelId ? `aria-labelledby="${labelId}"` : `aria-label="${esc(aria || placeholder)}"`}></ul>
       </div>`;
     const btn = $('.combo__btn', el), pop = $('.combo__pop', el), input = $('input', el), list = $('.combo__list', el);
@@ -263,7 +263,7 @@
         if (!its.length) return '';
         return (g.label ? `<li class="combo__group" role="presentation">${g.label}</li>` : '') + its.map(it => {
           items.push(it);
-          return `<li class="combo__opt" role="option" id="${id}-o${items.length - 1}" data-i="${items.length - 1}" aria-selected="${!!it.selected}" style="--fam:${it.hue}">
+          return `<li class="combo__opt" role="option" id="${id}-o${items.length - 1}" data-i="${items.length - 1}" aria-selected="${!!it.selected}"${it.disabled ? ' aria-disabled="true"' : ''} style="--fam:${it.hue}">
             ${it.img ? `<img src="${ASSETS}${it.img}" alt="" loading="lazy">` : '<span class="dot"></span>'}
             <span><b>${esc(it.text)}</b>${it.sub ? `<small>${esc(it.sub)}</small>` : ''}</span></li>`;
         }).join('');
@@ -279,7 +279,7 @@
     }
     const open = () => { pop.hidden = false; btn.setAttribute('aria-expanded', 'true'); input.value = ''; render(); input.focus(); };
     const close = (focus = true) => { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); if (focus) btn.focus(); };
-    const pick = i => { const it = items[i]; if (!it) return; close(); onPick(it.value); };
+    const pick = i => { const it = items[i]; if (!it || it.disabled) return; close(); onPick(it.value); };
     btn.addEventListener('click', () => (pop.hidden ? open() : close()));
     input.addEventListener('input', render);
     input.addEventListener('keydown', e => {
@@ -294,7 +294,7 @@
       if (!pop.hidden && !el.contains(e.target)) close(false);
     };
     document.addEventListener('click', outside);
-    return { setLabel: t => { $('.combo__val', el).textContent = t; } };
+    return { setLabel: t => { $('.combo__val', el).textContent = t; }, open };
   }
 
   /* ---------- reviews (shared: home testimonials, product page) ---------- */
