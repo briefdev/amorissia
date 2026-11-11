@@ -311,6 +311,7 @@
       ${p ? `<a class="review__product" href="product.html?id=${p.id}"><span class="review__thumb">${ph(p)}</span><span>${esc(tx(p.name))}<small>${L === 'ar' ? 'عن هذا العطر' : 'About this scent'}</small></span></a>` : ''}
     </figure>`;
   }
+  const reviewsCount = n => L === 'ar' ? ({ 1: 'تقييم واحد', 2: 'تقييمان' }[n] || (n <= 10 ? `${n} تقييمات` : `${n} تقييمًا`)) : `${n} review${n === 1 ? '' : 's'}`;
   const ratingOf = list => list.length ? list.reduce((n, r) => n + r.stars, 0) / list.length : 0;
 
   /* ---------- toast ---------- */
@@ -399,5 +400,5 @@
   syncCounts(); syncTheme(); renderCart(); initTrail(); observe();
 
   /* public API for page scripts */
-  AM.ui = { starsOf, reviewCard, ratingOf, combo, keyNote, display, gridVars, L, STR, tx, money, esc, $, $$, store, byId, fam, sizesOf, minPrice, priceOf, discount, notesOf, label, icon, drop, ph, card, isFav, toggleFav, addToCart, openQV, sizeRadio, toast, observe, cartCount };
+  AM.ui = { reviewsCount, starsOf, reviewCard, ratingOf, combo, keyNote, display, gridVars, L, STR, tx, money, esc, $, $$, store, byId, fam, sizesOf, minPrice, priceOf, discount, notesOf, label, icon, drop, ph, card, isFav, toggleFav, addToCart, openQV, sizeRadio, toast, observe, cartCount };
 })();

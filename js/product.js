@@ -137,7 +137,7 @@
             <span class="dot" style="background:${fam(x.family).hue}"></span><span>${T.compareWith} ${esc(tx(x.name))}</span>${icon('arrow', 'ico flip')}</a>`).join('')}</div>
           <a class="link-drop" href="compare.html?a=${p.id}" style="margin-top:var(--s-4)">${T.compareOther} ${drop()}</a></div></details>
         <details id="pdp-reviews"><summary>${ar ? 'التقييمات' : 'Reviews'} <span class="muted">(${reviews.length})</span></summary><div class="body">
-          ${reviews.length ? `<div class="reviews-sum"><b class="num">${rating.toFixed(1)}</b>${starsOf(rating, 'stars--lg')}<span class="muted">${ar ? `من ${reviews.length} ${reviews.length === 1 ? 'تقييم' : 'تقييمات'}` : `from ${reviews.length} review${reviews.length === 1 ? '' : 's'}`}</span></div>
+          ${reviews.length ? `<div class="reviews-sum"><b class="num">${rating.toFixed(1)}</b>${starsOf(rating, 'stars--lg')}<span class="muted">${ar ? 'من' : 'from'} ${AM.ui.reviewsCount(reviews.length)}</span></div>
             <div class="reviews-list">${reviews.map(r => reviewCard(r, false)).join('')}</div>`
           : `<p class="muted">${ar ? 'لا توجد تقييمات لهذا العطر بعد. كن أول من يقيّمه بعد الشراء.' : 'No reviews for this scent yet. Be the first to review it after your purchase.'}</p>`}
         </div></details>

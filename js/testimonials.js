@@ -4,13 +4,14 @@
   const track = $('#rv-track'); if (!track) return;
   const ar = L === 'ar';
   const all = AM.REVIEWS || [];
-  const written = all.filter(r => r.text);
+  // store-level reviews only on the home page (scent reviews live on their product pages)
+  const written = all.filter(r => r.text && !r.product);
   if (!written.length) { $('#reviews').hidden = true; return; }
 
   const avg = ratingOf(all);
   $('#rv-sum').innerHTML = `<b class="num">${avg.toFixed(1)}</b>${starsOf(avg, 'stars--lg')}
-    <span class="muted">${ar ? `من ${all.length} تقييمات` : `from ${all.length} reviews`}</span>`;
-  track.innerHTML = written.map(r => reviewCard(r)).join('');
+    <span class="muted">${ar ? 'من' : 'from'} ${AM.ui.reviewsCount(all.length)}</span>`;
+  track.innerHTML = written.map(r => reviewCard(r, false)).join('');
 
   // slider arrows: one card per click, stop at the ends
   const rtl = document.documentElement.dir === 'rtl';
