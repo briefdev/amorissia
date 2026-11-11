@@ -85,6 +85,7 @@
         <p class="pdp__conc"><span>${esc(label('conc', p.conc))}</span><span class="lat">${AM.LABELS.conc[p.conc].abbr}</span>
           <span>· ${esc(label('gender', p.gender))}</span><span>· <span style="color:${f.hue}">●</span> ${esc(tx(f))}</span></p>
         <p class="pdp__desc">${esc(tx(p.desc))}</p>
+        <div class="pdp__perf" aria-label="${T.perf}"><p class="pbox__title">${T.perf}</p><div class="perf">${meter(T.longevity, p.longevity)}${meter(T.sillage, p.sillage)}</div></div>
         <div class="pdp__icons">
           <button class="circle-btn" type="button" id="share" aria-label="${T.share}">${icon('share')}</button>
           <button class="circle-btn" type="button" data-fav="${p.id}" aria-pressed="${isFav(p.id)}" aria-label="${ar ? 'المفضلة' : 'Favourite'}">${icon('heart')}</button>
@@ -125,7 +126,6 @@
             <div><dt>${T.occasion}</dt><dd>${tags('occasion', p.occasion)}</dd></div>
             <div><dt>${T.place}</dt><dd>${tags('place', p.place)}</dd></div>
           </dl></div></details>
-        <details><summary>${T.perf}</summary><div class="body"><div class="perf">${meter(T.longevity, p.longevity)}${meter(T.sillage, p.sillage)}</div></div></details>
         <details><summary>${ar ? 'ركّب عطرك' : 'Layer your scent'}</summary><div class="body"><p class="lead" style="margin-bottom:var(--s-4)">${T.pairLead}</p>
           <div class="examples">${pairs.map(x => `<div class="example example--pair">
             <a href="product.html?id=${x.id}">${esc(tx(p.name))} + ${esc(tx(x.name))}</a>
