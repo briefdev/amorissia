@@ -14,9 +14,9 @@
       ] },
     { id: 'weather', h: ar ? 'كيف يكون الطقس غالبًا حين تتعطّر؟' : 'What is the weather usually like when you wear it?', sub: ar ? 'درجة الحرارة تغيّر طريقة فوحان العطر.' : 'Temperature changes how a scent projects.',
       opts: [
-        { v: 'hot', ico: 'sun', t: ar ? 'طقس حار' : 'Hot', s: ar ? '30° فأكثر' : '30°+' },
-        { v: 'moderate', ico: 'wind', t: ar ? 'طقس معتدل' : 'Mild', s: '20–29°' },
-        { v: 'cold', ico: 'snow', t: ar ? 'طقس بارد' : 'Cold', s: ar ? '19° وأقل' : '19° and below' }
+        { v: 'hot', ico: 'sun', t: ar ? 'طقس حار · الصيف' : 'Hot · Summer', s: ar ? '30° فأكثر' : '30°+' },
+        { v: 'moderate', ico: 'wind', t: ar ? 'طقس معتدل · الربيع والخريف' : 'Mild · Spring & autumn', s: '20–29°' },
+        { v: 'cold', ico: 'snow', t: ar ? 'طقس بارد · الشتاء' : 'Cold · Winter', s: ar ? '19° وأقل' : '19° and below' }
       ] },
     { id: 'family', h: ar ? 'أي طابع أقرب لذوقك؟' : 'Which character feels like you?', sub: ar ? 'الأقرب لاختياراتك مُعلَّم أولًا — والقرار لك.' : 'Closest to your answers is marked — your call.' }
   ];
@@ -41,13 +41,13 @@
     const q = Q[step];
     const rec = step === 2 ? recFamilies() : [];
     const opts = step === 2
-      ? F.map(f => ({ v: f.id, t: tx(f), s: tx(f.notes), fam: f.hue, rec: rec.includes(f.id) })).sort((a, b) => b.rec - a.rec)
+      ? F.map(f => ({ v: f.id, t: tx(f), s: tx(f.notes), fam: f.hue, rec: rec.includes(f.id), off: !AM.PRODUCTS.some(p => p.family === f.id) }))
       : q.opts;
     dots(step);
     body.innerHTML = `
       <h2 class="explorer__q">${q.h}</h2><p class="muted">${q.sub}</p>
-      <div class="opts">${opts.map(o => `<button class="opt" type="button" data-v="${o.v}" aria-pressed="${ans[q.id] === o.v}"${o.fam ? ` style="--fam:${o.fam}"` : ''}>
-        ${o.rec ? `<span class="rec">${ar ? 'الأقرب لاختياراتك' : 'Closest match'}</span>` : ''}
+      <div class="opts ${step === 2 ? 'opts--grid' : 'opts--list'}">${opts.map(o => `<button class="opt" type="button" data-v="${o.v}" aria-pressed="${ans[q.id] === o.v}"${o.off ? ' disabled' : ''}${o.fam ? ` style="--fam:${o.fam}"` : ''}>
+        ${o.rec && !o.off ? `<span class="rec">${ar ? 'الأقرب لاختياراتك' : 'Closest match'}</span>` : ''}${o.off ? `<span class="rec rec--soon">${ar ? 'قريبًا' : 'Soon'}</span>` : ''}
         ${o.fam ? '<span class="dot"></span>' : icon(o.ico)}<b>${esc(o.t)}</b><small>${esc(o.s)}</small></button>`).join('')}</div>
       <div class="q-nav">${step ? `<button class="btn btn--line" type="button" id="ex-back">${icon('arrow', 'ico rev')} ${ar ? 'السابق' : 'Back'}</button>` : '<span></span>'}</div>`;
     $$('.opt', body).forEach(b => b.addEventListener('click', () => {

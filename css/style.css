@@ -1186,3 +1186,34 @@ dialog.settings { width: min(94vw, 460px); }
   .hero__tag-price { justify-content: center; }
 }
 .pdp__promo .tag { font-size: .85rem; padding: 8px 14px; }
+
+/* ---------- Product shapes: site background inside, a frame in the family colour ---------- */
+.ph { background: color-mix(in oklab, var(--fam, var(--gold-600)) 52%, var(--surface)); --frame: 3px; }
+.ph::before { content: ""; position: absolute; inset: var(--frame); background: var(--bg); }
+.ph--arch::before { -webkit-mask: var(--arch) center / 100% 100% no-repeat; mask: var(--arch) center / 100% 100% no-repeat; }
+.ph--dome::before { -webkit-mask: var(--dome) center / 100% 100% no-repeat; mask: var(--dome) center / 100% 100% no-repeat; }
+.ph > * { position: relative; z-index: 1; }
+.ph > .ph-img { position: absolute; }
+.pdp__media .ph, .cmp2__img .ph { --frame: 4px; }
+.mixer__thumb .ph, .combo__opt .ph { --frame: 2px; }
+.mixer__perf { display: block; margin-top: 4px; font-size: .78rem; color: var(--muted); }
+.mixer__perf b { color: var(--accent-text); font-weight: 500; }
+
+/* ---------- Explorer: time & weather as full-width rows, families as a 3×3 grid ---------- */
+.explorer__body .opts.opts--list { grid-template-columns: 1fr; }
+.explorer__body .opts--list .opt { min-height: 0; display: grid; grid-template-columns: auto 1fr auto; align-items: center; column-gap: var(--s-4); padding: var(--s-4) var(--s-5); }
+.explorer__body .opts--list .opt small { text-align: end; }
+.explorer__body .opts.opts--grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.explorer__body .opts--grid .opt { min-height: 118px; }
+.opt[disabled] { opacity: .45; cursor: default; transform: none; }
+.opt .rec--soon { background: var(--surface-2); color: var(--muted); }
+@media (max-width: 640px) {
+  .explorer__body .opts--list .opt { padding: var(--s-3) var(--s-4); column-gap: var(--s-3); }
+  .explorer__body .opts--list .opt b { font-size: 1.1rem; }
+  .explorer__body .opts--grid .opt { min-height: 96px; padding: var(--s-3) var(--s-2); gap: 4px; }
+  .explorer__body .opts--grid .opt b { font-size: .95rem; }
+  .explorer__body .opts--grid .opt small { display: none; }
+  .explorer__body .opts--grid .opt .rec { position: static; justify-self: start; font-size: .62rem; padding: 2px 6px; }
+}
+.style-chips { margin-bottom: var(--s-4); }
+.style-chips .chip { min-height: 40px; padding-inline: var(--s-5); font-size: .95rem; }

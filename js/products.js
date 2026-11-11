@@ -68,6 +68,21 @@ AM.LABELS = {
   level:   { 1: { ar: 'عادي', en: 'Soft' }, 2: { ar: 'متوسط', en: 'Moderate' }, 3: { ar: 'قوي', en: 'Strong' } }
 };
 
+/* «Your style»: each style suggests the best-selling in-stock scents of its families.
+   strength: 'soft' = sillage up to moderate, 'strong' = strong sillage, '' = any. */
+AM.STYLES = [
+  { id: 'classic',  ar: 'كلاسيكي هادئ', en: 'Quiet classic', families: ['aromatic', 'woody'], strength: 'soft',
+    desc: { ar: 'أناقة هادئة لا تعلو على صاحبها: أروماتي وخشبي ناعم.', en: 'Calm elegance that never shouts: soft aromatic and woody.' } },
+  { id: 'bold',     ar: 'جريء ولافت', en: 'Bold', families: ['oriental', 'gourmand', 'woody'], strength: 'strong',
+    desc: { ar: 'حضور قوي يُلاحَظ من بعيد: عنبري وجورماند بفوحان قوي.', en: 'A presence noticed from afar: amber and gourmand with strong sillage.' } },
+  { id: 'soft',     ar: 'ناعم ونظيف', en: 'Soft & clean', families: ['floral', 'fruity'], strength: 'soft',
+    desc: { ar: 'إحساس النظافة والراحة: زهري وفاكهي خفيف.', en: 'The feel of clean comfort: light floral and fruity.' } },
+  { id: 'sport',    ar: 'رياضي ونشيط', en: 'Active', families: ['citrus', 'green', 'aromatic', 'aquatic'], strength: '',
+    desc: { ar: 'انتعاش للحركة والحر: حمضي وأخضر وأروماتي.', en: 'Freshness for movement and heat: citrus, green and aromatic.' } },
+  { id: 'romantic', ar: 'رومانسي', en: 'Romantic', families: ['floral', 'gourmand', 'fruity'], strength: '',
+    desc: { ar: 'دفء وحلاوة للسهرات: زهري وجورماند.', en: 'Warmth and sweetness for evenings: floral and gourmand.' } }
+];
+
 /* Product display settings — the merchant-adjustable part (a theme setting in Salla).
    cols/count per device, card type, and which parts the card shows. */
 AM.DISPLAY = {

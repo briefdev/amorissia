@@ -15,13 +15,13 @@
   AM.PRODUCTS.forEach(p => allNotes(p).forEach(t => { if (!NOTES.some(x => x.t === t)) NOTES.push({ t, family: p.family }); }));
 
   const T = ar ? {
-    scents: 'العطور', notes: 'النوتات', suggested: 'مقترح لك', all: 'كل العطور',
+    scents: 'العطور', notes: 'النوتات', sameFam: 'من نفس العائلة — الأكثر مبيعًا', sameNote: 'يشاركه نوتة — الأكثر مبيعًا', others: 'باقي العطور', perf: 'الأداء', longevity: 'ثبات', sillage: 'فوحان',
     pickA: 'اختر عطرًا أو نوتة', pickB: 'اختر العطر الثاني', note: 'نوتة',
     order: 'طريقة الوضع', addBoth: 'أضف الاثنين للسلة', suggest: 'عطور تحمل هذه النوتة', wear: 'متى تلبسها',
     light: 'خفيفة ونهارية', mid: 'متوازنة للمساء والدوام', deep: 'عميقة للمناسبات والطقس البارد',
     base: 'يوضع أولًا كقاعدة', top: 'يوضع فوقه كلمسة', same: 'يكثّف نفس الطابع', both: 'الحجمان الأصغر معًا', blend: 'التركيبة الناتجة'
   } : {
-    scents: 'Scents', notes: 'Notes', suggested: 'Suggested for you', all: 'All scents',
+    scents: 'Scents', notes: 'Notes', sameFam: 'Same family — best sellers', sameNote: 'Shares a note — best sellers', others: 'Other scents', perf: 'Performance', longevity: 'longevity', sillage: 'sillage',
     pickA: 'Pick a scent or a note', pickB: 'Pick the second scent', note: 'Note',
     order: 'How to wear it', addBoth: 'Add both to bag', suggest: 'Scents carrying this note', wear: 'When to wear it',
     light: 'light and daytime', mid: 'balanced for evenings and work', deep: 'deep, for occasions and cold weather',
@@ -34,22 +34,18 @@
   const nameOf = s => s.kind === 'scent' ? tx(byId(s.v).name) : s.v;
 
 
-  /* ---------- matching: a clear contrast in weight layers best ---------- */
+  /* ---------- matching: best sellers of the same family first, then best sellers sharing a note, then the rest ---------- */
   function ranked() {
     const fi = famIdx(familyOf(first));
+    const notes = first.kind === 'scent' ? allNotes(byId(first.v)) : [first.v];
     return AM.PRODUCTS
       .filter(p => p.inStock && !(first.kind === 'scent' && p.id === first.v))
       .map(p => {
-        const d = Math.abs(famIdx(p.family) - fi);
-        let score = d >= 2 && d <= 5 ? 6 - Math.abs(d - 3) : d === 0 ? 2 : 1;
-        if (first.kind === 'scent') {
-          const a = byId(first.v);
-          if (AM.PAIRINGS.some(x => (x.a === a.id && x.b === p.id) || (x.b === a.id && x.a === p.id))) score += 5;
-          score += p.facets.filter(f => a.facets.includes(f)).length;
-        } else if (allNotes(p).includes(first.v)) score += 2;
-        return { p, score, rel: d === 0 ? T.same : famIdx(p.family) > fi ? T.base : T.top };
+        const tier = p.family === familyOf(first) ? 0 : allNotes(p).some(n => notes.includes(n)) ? 1 : 2;
+        const pi = famIdx(p.family);
+        return { p, tier, rel: pi === fi ? T.same : pi > fi ? T.base : T.top };
       })
-      .sort((x, y) => y.score - x.score || y.p.sold - x.p.sold);
+      .sort((x, y) => x.tier - y.tier || y.p.sold - x.p.sold);
   }
   const scentItem = (p, selected, sub) => ({ value: p.id, text: tx(p.name), sub: sub || `${brandOf(p)} · ${tx(fam(p.family))}`,
     search: `${tx(p.name)} ${brandOf(p)} ${allNotes(p).join(' ')}`, hue: fam(p.family).hue, img: p.img, selected });
@@ -65,10 +61,12 @@
   const comboB = AM.ui.combo($('#combo-b'), {
     labelId: 'mix-b-label', placeholder: T.pickB,
     groups: () => {
-      const r = ranked();
+      const r = ranked(), pick = t => r.filter(m => m.tier === t);
+      const item = m => scentItem(m.p, m.p.id === second, `${tx(fam(m.p.family))} · ${m.rel}`);
       return [
-        { label: T.suggested, items: r.slice(0, 6).map(m => scentItem(m.p, m.p.id === second, `${tx(fam(m.p.family))} · ${m.rel}`)) },
-        { label: T.all, items: r.slice(6).map(m => scentItem(m.p, m.p.id === second)) }
+        { label: T.sameFam, items: pick(0).map(item) },
+        { label: T.sameNote, items: pick(1).map(item) },
+        { label: T.others, items: pick(2).map(m => scentItem(m.p, m.p.id === second)) }
       ];
     },
     onPick: v => { second = v; update(); }
@@ -79,7 +77,8 @@
     const f = fam(familyOf(s)), p = s.kind === 'scent' ? byId(s.v) : null;
     return `${p?.img ? `<span class="mixer__thumb">${AM.ui.ph(p)}</span>` : `<span class="dot" style="--fam:${f.hue}"></span>`}
       <span><b>${esc(nameOf(s))}</b> · ${esc(tx(f))}${p ? ` · ${esc(label('conc', p.conc))}` : ` · ${T.note}`}
-      <small class="muted">${esc(p ? allNotes(p).slice(0, 4).join(sep) : tx(f.notes))}</small></span>`;
+      <small class="muted">${esc(p ? allNotes(p).slice(0, 4).join(sep) : tx(f.notes))}</small>
+      ${p ? `<small class="mixer__perf">${T.perf}: ${T.longevity} <b>${esc(label('level', p.longevity))}</b> · ${T.sillage} <b>${esc(label('level', p.sillage))}</b></small>` : ''}</span>`;
   }
   function renderResult() {
     const res = $('#mix-result');
