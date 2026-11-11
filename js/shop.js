@@ -1,6 +1,6 @@
 /* Shop: filters (multi-select within a group, AND across groups), search, sort, URL sync. */
 (() => {
-  const { L, tx, $, $$, esc, card, observe, label, sizesOf, minPrice, notesOf, isFav, icon } = AM.ui;
+  const { L, tx, $, $$, esc, card, observe, label, sizesOf, minPrice, discount, notesOf, isFav, icon } = AM.ui;
   const ar = L === 'ar';
   const P = AM.PRODUCTS;
   const LB = AM.LABELS;
@@ -107,7 +107,10 @@
     light: (a, b) => famIndex(a) - famIndex(b),
     heavy: (a, b) => famIndex(b) - famIndex(a),
     'price-asc': (a, b) => minPrice(a) - minPrice(b),
-    'price-desc': (a, b) => minPrice(b) - minPrice(a)
+    'price-desc': (a, b) => minPrice(b) - minPrice(a),
+    // discounted products first, ordered by their sale price; the rest keep their order after them
+    'sale-asc': (a, b) => (!discount(a) - !discount(b)) || (discount(a) && minPrice(a) - minPrice(b)),
+    'sale-desc': (a, b) => (!discount(a) - !discount(b)) || (discount(a) && minPrice(b) - minPrice(a))
   };
   function render() {
     const list = P.filter(p => match(p)).sort(sorters[state.sort]);
