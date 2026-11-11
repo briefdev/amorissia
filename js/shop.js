@@ -31,8 +31,9 @@
     if (state.min !== '' && !prices.some(v => v >= +state.min)) return false;
     if (state.max !== '' && !prices.some(v => v <= +state.max)) return false;
     if (state.q) {
-      const hay = [p.name.ar, p.name.en, ...p.notes.top, ...p.notes.heart, ...p.notes.base, ...p.notesEn.top, ...p.notesEn.heart, ...p.notesEn.base, tx(AM.ui.fam(p.family))].join(' ').toLowerCase();
-      if (!hay.includes(state.q.toLowerCase())) return false;
+      const b = AM.BRANDS.find(x => x.id === p.brand), f = AM.ui.fam(p.family);
+      const hay = [p.name.ar, p.name.en, b?.ar, b?.en, ...p.notes.top, ...p.notes.heart, ...p.notes.base, ...p.notesEn.top, ...p.notesEn.heart, ...p.notesEn.base, f.ar, f.en].join(' ');
+      if (!AM.ui.searchMatch(hay, state.q)) return false;
     }
     return true;
   }
@@ -204,8 +205,8 @@
   $('#pmax').addEventListener('input', e => debounced(() => { state.max = e.target.value; render(); }));
   $('#sort').addEventListener('change', e => { state.sort = e.target.value; render(); });
   $('#brand-q').addEventListener('input', e => {
-    const q = e.target.value.trim().toLowerCase();
-    $$('#brand-chips .chip').forEach(c => { c.hidden = q && !c.dataset.name.toLowerCase().includes(q); });
+    const q = e.target.value;
+    $$('#brand-chips .chip').forEach(c => { c.hidden = !AM.ui.searchMatch(c.dataset.name, q); });
   });
   document.addEventListener('am:fav', () => state.fav && render());
   document.addEventListener('am:display', () => render());

@@ -242,6 +242,45 @@
     return `<label class="size"><input type="radio" name="${name}-size" value="${s}" ${checked ? 'checked' : ''}><span>${lbl}${price}</span></label>`;
   }
 
+  /* ---------- forgiving search (shop, dropdowns, brand filter) ----------
+     Arabic letter forms are folded (أ إ آ → ا, ة → ه, ى/ئ → ي, ؤ → و, no tashkeel/tatweel, ء dropped),
+     Latin accents and punctuation are ignored, «ال» at the start of a word is optional, Arabic digits match Latin,
+     every word of the query may appear anywhere, and a small typo is tolerated in longer words. */
+  const fold = s => String(s || '').toLowerCase().normalize('NFKD')
+    .replace(/[̀-ًͯ-ٰٟـ]/g, '')
+    .replace(/[أإآٱ]/g, 'ا').replace(/ة/g, 'ه').replace(/[ىئ]/g, 'ي').replace(/ؤ/g, 'و').replace(/ء/g, '')
+    .replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632).replace(/[۰-۹]/g, d => d.charCodeAt(0) - 1776)
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .split(' ').filter(Boolean).map(w => w.length > 3 && w.startsWith('ال') ? w.slice(2) : w);
+  // edit distance, giving up (max + 1) as soon as it is further than `max`
+  function near(a, b, max) {
+    if (Math.abs(a.length - b.length) > max) return max + 1;
+    let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+    for (let i = 1; i <= a.length; i++) {
+      const row = [i]; let best = i;
+      for (let j = 1; j <= b.length; j++) {
+        row[j] = Math.min(prev[j] + 1, row[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        best = Math.min(best, row[j]);
+      }
+      if (best > max) return max + 1;
+      prev = row;
+    }
+    return prev[b.length];
+  }
+  function searchMatch(hay, query) {
+    const q = fold(query);
+    if (!q.length) return true;
+    const words = fold(hay), joined = words.join(' ');
+    return q.every(t => {
+      if (joined.includes(t)) return true;
+      // short words: only a skipped letter (بلك → بلاك), anything looser matches too much
+      if (t.length === 3) return words.some(w => w.length === 4 && near(t, w, 1) <= 1);
+      const max = t.length >= 8 ? 2 : t.length >= 4 ? 1 : 0;
+      // the typed word against whole words, and against the start of longer words (still typing)
+      return max > 0 && words.some(w => near(t, w, max) <= max || (w.length > t.length && near(t, w.slice(0, t.length), max) <= max));
+    });
+  }
+
   /* ---------- searchable dropdown (layering, compare) ---------- */
   function combo(el, { labelId, label: aria, placeholder, groups, onPick, search = true }) {
     const id = el.id;
@@ -254,9 +293,9 @@
       </div>`;
     const btn = $('.combo__btn', el), pop = $('.combo__pop', el), input = $('input', el), list = $('.combo__list', el);
     let items = [], active = -1;
-    const match = (it, q) => !q || (it.search || it.text).toLowerCase().includes(q);
+    const match = (it, q) => searchMatch(`${it.text} ${it.search || ''} ${it.sub || ''}`, q);
     function render() {
-      const q = input.value.trim().toLowerCase();
+      const q = input.value;
       items = [];
       list.innerHTML = groups().map(g => {
         const its = g.items.filter(it => match(it, q));
@@ -400,5 +439,5 @@
   syncCounts(); syncTheme(); renderCart(); initTrail(); observe();
 
   /* public API for page scripts */
-  AM.ui = { reviewsCount, starsOf, reviewCard, ratingOf, combo, keyNote, display, gridVars, L, STR, tx, money, esc, $, $$, store, byId, fam, sizesOf, minPrice, priceOf, discount, notesOf, label, icon, drop, ph, card, isFav, toggleFav, addToCart, openQV, sizeRadio, toast, observe, cartCount };
+  AM.ui = { searchMatch, reviewsCount, starsOf, reviewCard, ratingOf, combo, keyNote, display, gridVars, L, STR, tx, money, esc, $, $$, store, byId, fam, sizesOf, minPrice, priceOf, discount, notesOf, label, icon, drop, ph, card, isFav, toggleFav, addToCart, openQV, sizeRadio, toast, observe, cartCount };
 })();
