@@ -297,6 +297,22 @@
     return { setLabel: t => { $('.combo__val', el).textContent = t; } };
   }
 
+  /* ---------- reviews (shared: home testimonials, product page) ---------- */
+  const starsOf = (n, cls = '') => `<span class="stars ${cls}" role="img" aria-label="${L === 'ar' ? `${n} من 5` : `${n} out of 5`}">${
+    [1, 2, 3, 4, 5].map(i => `<svg viewBox="0 0 24 24" aria-hidden="true" class="${i <= Math.round(n) ? 'on' : ''}"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>`).join('')}</span>`;
+  const fmtDate = d => { try { return new Date(d).toLocaleDateString(L === 'ar' ? 'ar-AE' : 'en-AE', { year: 'numeric', month: 'long', day: 'numeric', numberingSystem: 'latn' }); } catch { return d; } };
+  function reviewCard(r, withProduct = true) {
+    const p = withProduct && r.product ? byId(r.product) : null;
+    return `<figure class="review">
+      ${starsOf(r.stars)}
+      <blockquote class="review__text">${esc(r.text)}</blockquote>
+      <figcaption class="review__by"><span class="review__avatar" aria-hidden="true">${esc((r.name || '?').trim().charAt(0))}</span>
+        <span><b>${esc(r.name)}</b><small>${esc(r.city)}${r.city ? ' · ' : ''}${fmtDate(r.date)}</small></span></figcaption>
+      ${p ? `<a class="review__product" href="product.html?id=${p.id}"><span class="review__thumb">${ph(p)}</span><span>${esc(tx(p.name))}<small>${L === 'ar' ? 'عن هذا العطر' : 'About this scent'}</small></span></a>` : ''}
+    </figure>`;
+  }
+  const ratingOf = list => list.length ? list.reduce((n, r) => n + r.stars, 0) / list.length : 0;
+
   /* ---------- toast ---------- */
   let toastT;
   function toast(msg) {
@@ -383,5 +399,5 @@
   syncCounts(); syncTheme(); renderCart(); initTrail(); observe();
 
   /* public API for page scripts */
-  AM.ui = { combo, keyNote, display, gridVars, L, STR, tx, money, esc, $, $$, store, byId, fam, sizesOf, minPrice, priceOf, discount, notesOf, label, icon, drop, ph, card, isFav, toggleFav, addToCart, openQV, sizeRadio, toast, observe, cartCount };
+  AM.ui = { starsOf, reviewCard, ratingOf, combo, keyNote, display, gridVars, L, STR, tx, money, esc, $, $$, store, byId, fam, sizesOf, minPrice, priceOf, discount, notesOf, label, icon, drop, ph, card, isFav, toggleFav, addToCart, openQV, sizeRadio, toast, observe, cartCount };
 })();

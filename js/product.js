@@ -1,6 +1,6 @@
 /* Product page: details, sizes & sample, scent pyramid inside the "A", performance, usage, related. */
 (() => {
-  const { L, tx, $, $$, esc, money, label, byId, fam, sizesOf, priceOf, notesOf, isFav, icon, drop, ph, card, addToCart, toast, observe, store, sizeRadio } = AM.ui;
+  const { starsOf, reviewCard, L, tx, $, $$, esc, money, label, byId, fam, sizesOf, priceOf, notesOf, isFav, icon, drop, ph, card, addToCart, toast, observe, store, sizeRadio } = AM.ui;
   const ar = L === 'ar';
   const root = $('#pdp-root');
   const id = new URLSearchParams(location.search).get('id') || AM.PRODUCTS[0].id;
@@ -42,6 +42,8 @@
 
   const f = fam(p.family);
   const n = notesOf(p);
+  const reviews = (AM.REVIEWS || []).filter(r => r.product === p.id && (r.text || r.stars));
+  const rating = AM.ui.ratingOf(reviews);
   const brand = tx(AM.BRANDS.find(b => b.id === p.brand));
   document.title = `${tx(p.name)} — ${label('conc', p.conc)} | AMORISSEA`;
   $('meta[name="description"]')?.setAttribute('content', tx(p.desc));
@@ -79,6 +81,7 @@
       <div class="pdp__info">
         <span class="${ar ? 'eyebrow' : 'caps'}">${esc(brand)}</span>
         <h1 class="pdp__name">${esc(tx(p.name))}</h1>
+        <a class="pdp__rating" href="#pdp-reviews">${reviews.length ? `${starsOf(rating)}<b class="lat">${rating.toFixed(1)}</b><span>(${reviews.length})</span>` : `${starsOf(0)}<span>${ar ? 'لا توجد تقييمات بعد' : 'No reviews yet'}</span>`}</a>
         <p class="pdp__conc"><span>${esc(label('conc', p.conc))}</span><span class="lat">${AM.LABELS.conc[p.conc].abbr}</span>
           <span>· ${esc(label('gender', p.gender))}</span><span>· <span style="color:${f.hue}">●</span> ${esc(tx(f))}</span></p>
         <p class="pdp__desc">${esc(tx(p.desc))}</p>
@@ -133,6 +136,11 @@
           <div class="examples">${[...similar, ...like].slice(0, 4).map(x => `<a class="example example--link" href="compare.html?a=${p.id}&b=${x.id}">
             <span class="dot" style="background:${fam(x.family).hue}"></span><span>${T.compareWith} ${esc(tx(x.name))}</span>${icon('arrow', 'ico flip')}</a>`).join('')}</div>
           <a class="link-drop" href="compare.html?a=${p.id}" style="margin-top:var(--s-4)">${T.compareOther} ${drop()}</a></div></details>
+        <details id="pdp-reviews"><summary>${ar ? 'التقييمات' : 'Reviews'} <span class="muted">(${reviews.length})</span></summary><div class="body">
+          ${reviews.length ? `<div class="reviews-sum"><b class="num">${rating.toFixed(1)}</b>${starsOf(rating, 'stars--lg')}<span class="muted">${ar ? `من ${reviews.length} ${reviews.length === 1 ? 'تقييم' : 'تقييمات'}` : `from ${reviews.length} review${reviews.length === 1 ? '' : 's'}`}</span></div>
+            <div class="reviews-list">${reviews.map(r => reviewCard(r, false)).join('')}</div>`
+          : `<p class="muted">${ar ? 'لا توجد تقييمات لهذا العطر بعد. كن أول من يقيّمه بعد الشراء.' : 'No reviews for this scent yet. Be the first to review it after your purchase.'}</p>`}
+        </div></details>
       </div>
     </section>`;
 
@@ -158,6 +166,7 @@
   $('#add')?.addEventListener('click', () => addToCart(p.id, sel(), clamp(+q.value), 'soft'));
   $('#buy')?.addEventListener('click', () => addToCart(p.id, sel(), clamp(+q.value)));
   $('#notify')?.addEventListener('click', () => toast(T.notifyOk));
+  $('.pdp__rating').addEventListener('click', () => { $('#pdp-reviews').open = true; });
   $('#copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(url); toast(T.copied); } catch { toast(url); } });
   $('#share').addEventListener('click', async () => {
     if (navigator.share) { try { await navigator.share({ title: tx(p.name), url }); } catch { /* cancelled */ } }
