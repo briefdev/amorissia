@@ -765,14 +765,7 @@ dialog:focus, dialog:focus-visible { outline: none; }
 .social .icon-btn { border: 1px solid var(--line); border-radius: 50%; }
 .social .icon-btn:hover { border-color: var(--gold-400); }
 /* store details: side by side */
-.legal { display: flex; flex-wrap: wrap; gap: var(--s-4) var(--s-6); }
-.legal li { display: flex; align-items: center; gap: var(--s-3); }
-.legal__ico { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line-strong); display: grid; place-items: center; color: var(--accent-text); flex: none; }
-.legal__ico .ico { width: 20px; height: 20px; }
-.legal__txt { display: grid; line-height: 1.4; }
-.legal__txt span { font-size: .78rem; color: var(--muted); }
-.legal__txt b { font-weight: 500; font-size: .95rem; letter-spacing: .03em; }
-@media (min-width: 1000px) { .footer__trust { grid-template-columns: auto auto auto; justify-content: space-between; } }
+@media (min-width: 1000px) { .footer__trust { grid-template-columns: auto auto; justify-content: space-between; } }
 
 /* small phones: keep the header inside the screen */
 @media (max-width: 420px) {
@@ -784,13 +777,7 @@ dialog:focus, dialog:focus-visible { outline: none; }
 /* logos are Latin artwork: never inherit the page's RTL direction */
 .pay-mark { direction: ltr; unicode-bidi: isolate; }
 @media (max-width: 640px) {
-  .legal { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-3); }
-  .legal li { gap: var(--s-2); }
-  .legal__ico { width: 34px; height: 34px; }
-  .legal__ico .ico { width: 17px; height: 17px; }
-  .legal__txt span { font-size: .7rem; }
-  .legal__txt b { font-size: .82rem; letter-spacing: 0; }
-}
+            }
 
 /* ---------- Product card v2: normal (tall arch) + wide (dome + info table) ---------- */
 :root { --dome: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0 100V48C0 21 22 0 50 0s50 21 50 48v52z'/%3E%3C/svg%3E"); }
